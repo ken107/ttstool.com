@@ -18,7 +18,6 @@ languages = [
   {value:"cy", desc:"Welsh"}
 ]
 allVoices = [];
-voices = [];
 volumes = [
   {value:"default", desc:"default"},
   {value:"silent", desc:"silent"},
@@ -64,12 +63,17 @@ tts.getVoices()
   })
 
 
-function playAll() {
+function playAll(download) {
   if (!rows.length) return;
   if (!rows[0].voice) {
     alert("Please select a voice for the first speech segment.");
     return;
   }
+  var ssmlParts = toSSML(rows);
+  return download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
+}
+
+function toSSML(rows) {
   var parts = [];
   rows.forEach(function(row) {
     var part;
@@ -90,32 +94,32 @@ function playAll() {
   parts.forEach(function(part) {
     part.ssml = "<speak>" + part.ssml + "</speak>";
   })
-  return tts.speak(parts);
+  return parts;
 }
+
 
 function RemoteTTS(host) {
   var audio = document.createElement("AUDIO");
 
-  this.speak = function(parts, onEnd) {
-    return new Promise(function(fulfill, reject) {
-      $.post({
-        url: host + "/read-aloud/create",
-        data: JSON.stringify(parts),
-        contentType: "application/json",
-        success: function(result) {
+  this.speak = function(ssmlParts, onEnd) {
+    return create(ssmlParts)
+      .then(function(result) {
+        return new Promise(function(fulfill) {
           audio.pause();
           audio.src = host + "/read-aloud/get?q=" + result.join(",");
           audio.onplay = fulfill;
           audio.onerror =
           audio.onended = onEnd;
           audio.play();
-          fulfill();
-        },
-        error: function(xhr, status, error) {
-          reject(status || error);
-        }
+        })
       })
-    })
+  }
+
+  this.download = function(ssmlParts) {
+    return create(ssmlParts)
+      .then(function(result) {
+        location.href = host + "/read-aloud/get?q=" + result.join(",") + "&saveAs=narration.mp3";
+      })
   }
 
   this.isSpeaking = function(callback) {
@@ -130,6 +134,20 @@ function RemoteTTS(host) {
     return new Promise(function(fulfill, reject) {
       $.get({
         url: host + "/read-aloud/list-voices/amazon",
+        success: fulfill,
+        error: function(xhr, status, error) {
+          reject(status || error);
+        }
+      })
+    })
+  }
+
+  function create(parts) {
+    return new Promise(function(fulfill, reject) {
+      $.post({
+        url: host + "/read-aloud/create",
+        data: JSON.stringify(parts),
+        contentType: "application/json",
         success: fulfill,
         error: function(xhr, status, error) {
           reject(status || error);

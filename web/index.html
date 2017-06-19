@@ -12,15 +12,16 @@
   <script src="https://cdn.rawgit.com/ken107/databind-js/master/databind.js"></script>
   <script src="js/common.js"></script>
 </head>
-<body>
+<body bind-var-voices="null">
   <h2>Text-to-Speech Tool</h2>
-  <div>
-    Select language of narration:
-    <select bind-var-lang="(#languages[0].value)" bind-event-change="#lang = thisElem.value" bind-statement-1="#voices = #allVoices && #allVoices.filter(function(voice) {return voice.lang == #lang})">
+  <div bind-statement-1="$(thisElem).toggle(#voices == null)">
+    Select language:
+    <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.lang == thisElem.value})">
+      <option value=""></option>
       <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i].value">{{#languages[#i].desc}}</option>
     </select>
   </div>
-  <table class="rows">
+  <table class="rows" bind-statement-1="$(thisElem).toggle(#voices != null)">
     <tr bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
       <td>
         <div class="viewer" bind-statement-1="$(thisElem).toggle(#i != #editIndex)">
@@ -73,14 +74,15 @@
       <td>
         <div class="viewer">
           <div class="controls">
-            <input type="button" value="Add" bind-event-click="#rows.push({}); #editIndex=#rows.length-1;" />
+            <i class="material-icons button" bind-event-click="#rows.push({}); #editIndex=#rows.length-1;">add</i>
           </div>
         </div>
       </td>
     </tr>
   </table>
-  <div class="hyper-controls">
+  <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
     <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+    <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
   </div>
 </body>
 </html>

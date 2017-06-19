@@ -80,7 +80,10 @@ tr.add .viewer {
 }
 
 .hyper-controls {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+.hyper-controls i.button {
+  font-size: xx-large;
 }
