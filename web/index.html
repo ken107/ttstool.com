@@ -1,6 +1,86 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>TTS Narrator | LSD Software</title>
+  <meta name="description" content="Create voice narration using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube video; powered by Amazon Polly.">
+  <meta property="og:title" content="TTS Narrator | LSD Software">
+  <meta property="og:description" content="Create voice narration using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube video; powered by Amazon Polly.">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/ken107/databind-js/master/databind.js"></script>
+  <script src="js/common.js"></script>
+</head>
 <body>
-  Hello
+  <h2>Text-to-Speech Tool</h2>
+  <div>
+    Select language of narration:
+    <select bind-var-lang="(#languages[0].value)" bind-event-change="#lang = thisElem.value" bind-statement-1="#voices = #allVoices && #allVoices.filter(function(voice) {return voice.lang == #lang})">
+      <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i].value">{{#languages[#i].desc}}</option>
+    </select>
+  </div>
+  <table class="rows">
+    <tr bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
+      <td>
+        <div class="viewer" bind-statement-1="$(thisElem).toggle(#i != #editIndex)">
+          <div class="controls">
+            <i class="material-icons button" bind-event-click="#editIndex = #i">create</i>
+            <i class="material-icons button" bind-event-click="#rows.splice(#i,0,{}); #editIndex=#i;">add</i>
+            <i class="material-icons button" bind-event-click="#rows.splice(#i,1); if (#editIndex>#i) #editIndex--;">clear</i>
+          </div>
+          <div>
+            <span class="pause label" bind-statement-1="$(thisElem).toggle(#row.pause != null)">pause: {{#row.pause.value}}s</span>
+            <span class="voice label" bind-statement-1="$(thisElem).toggle(#row.voice != null)">voice: {{#row.voice.name}}</span>
+            <span class="volume label" bind-statement-1="$(thisElem).toggle(#row.volume != null)">volume: {{#row.volume.desc}}</span>
+            <span class="rate label" bind-statement-1="$(thisElem).toggle(#row.rate != null)">rate: {{#row.rate.desc}}</span>
+            <span class="pitch label" bind-statement-1="$(thisElem).toggle(#row.pitch != null)">pitch: {{#row.pitch.desc}}</span>
+            {{#row.text}}
+          </div>
+          <div style="clear: both;"></div>
+        </div>
+        <div class="editor" bind-statement-1="$(thisElem).toggle(#i == #editIndex)">
+          <div class="controls">
+            <i class="material-icons button" bind-event-click="#editIndex = null">check</i>
+          </div>
+          <div>
+            <input type="number" size="5" placeholder="Pause" min="0" max="10" bind-event-change="#row.pause = {value:thisElem.value}"
+              bind-statement-1="thisElem.value = #row.pause ? #row.pause.value : ''" />
+            <select bind-event-change="#row.voice = #voices[thisElem.value]" bind-statement-1="thisElem.value = #row.voice ? #voices.indexOf(#row.voice) : ''">
+              <option value="">voice</option>
+              <option bind-repeater-i="#voices.length" bind-statement-1="thisElem.value = #i">{{#voices[#i].desc}}</option>
+            </select>
+            <select bind-event-change="#row.volume = #volumes[thisElem.value]" bind-statement-1="thisElem.value = #row.volume ? #volumes.indexOf(#row.volume) : ''">
+              <option value="">volume</option>
+              <option bind-repeater-i="#volumes.length" bind-statement-1="thisElem.value = #i">{{#volumes[#i].desc}}</option>
+            </select>
+            <select bind-event-change="#row.rate = #rates[thisElem.value]" bind-statement-1="thisElem.value = #row.rate ? #rates.indexOf(#row.rate) : ''">
+              <option value="">rate</option>
+              <option bind-repeater-i="#rates.length" bind-statement-1="thisElem.value = #i">{{#rates[#i].desc}}</option>
+            </select>
+            <select bind-event-change="#row.pitch = #pitches[thisElem.value]" bind-statement-1="thisElem.value = #row.pitch ? #pitches.indexOf(#row.pitch) : ''">
+              <option value="">pitch</option>
+              <option bind-repeater-i="#pitches.length" bind-statement-1="thisElem.value = #i">{{#pitches[#i].desc}}</option>
+            </select>
+          </div>
+          <div class="text">
+            <textarea rows="4" placeholder="Enter text to be spoken." bind-event-change="#row.text = thisElem.value" bind-statement-1="thisElem.value = #row.text || ''">{{#row.text}}</textarea>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr class="add" bind-statement-1="$(thisElem).toggle(#editIndex == null)">
+      <td>
+        <div class="viewer">
+          <div class="controls">
+            <input type="button" value="Add" bind-event-click="#rows.push({}); #editIndex=#rows.length-1;" />
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <div class="hyper-controls">
+    <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+  </div>
 </body>
 </html>

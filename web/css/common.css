@@ -1,0 +1,86 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: small;
+}
+textarea {
+  box-sizing: border-box;
+}
+select {
+  height: 21px;
+}
+i.button {
+  cursor: pointer;
+  vertical-align: bottom;
+}
+
+table.rows {
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: collapse;
+}
+tr:nth-child(odd) .viewer, tr:nth-child(odd) .editor {
+  background-color: #eef;
+}
+tr:nth-child(even) .viewer, tr:nth-child(even) .editor {
+  background-color: #fee;
+}
+tr.add .viewer {
+  background-color: white;
+}
+
+.viewer {
+  padding: 10px;
+  border-radius: 3px;
+}
+.viewer > div:not(:first-child) {
+  margin-top: 5px;
+}
+.viewer .controls {
+  float: right;
+  margin: 0 0 10px 10px;
+}
+
+.editor {
+  padding: 10px;
+  border-radius: 3px;
+}
+.editor > div:not(:first-child) {
+  margin-top: 5px;
+}
+.editor textarea {
+  width: 100%;
+}
+.editor .controls {
+  float: right;
+}
+
+.label {
+  padding: 0 5px;
+  border-radius: 3px;
+}
+.label.pause {
+  background-color: #b33b95;
+  color: #f5b5dc;
+}
+.label.volume {
+  background-color: #407f51;
+  color: #aed182;
+}
+.label.rate {
+  background-color: #008eac;
+  color: #a9d1ec;
+}
+.label.voice {
+  background-color: #916460;
+  color: #ffee9c;
+}
+.label.pitch {
+  background-color: #e37000;
+  color: #fbcda8;
+}
+
+.hyper-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
