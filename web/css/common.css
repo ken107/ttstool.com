@@ -22,7 +22,7 @@ tr:nth-child(odd) .viewer, tr:nth-child(odd) .editor {
   background-color: #eef;
 }
 tr:nth-child(even) .viewer, tr:nth-child(even) .editor {
-  background-color: #fee;
+  background-color: #ddf;
 }
 tr.add .viewer {
   background-color: white;

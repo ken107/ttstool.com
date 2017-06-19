@@ -83,7 +83,7 @@ function playAll() {
       if (row.pitch) part.ssml += " pitch='" + row.pitch.value + "'";
       part.ssml += ">";
     }
-    part.ssml += row.text;
+    if (row.text) part.ssml += row.text;
     if (row.volume || row.rate || row.pitch) part.ssml += "</prosody>";
     part.ssml += " ";
   })
