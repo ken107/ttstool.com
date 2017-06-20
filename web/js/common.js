@@ -69,32 +69,58 @@ function playAll(download) {
     alert("Please select a voice for the first speech segment.");
     return;
   }
-  var ssmlParts = toSSML(rows);
+  var ssmlParts = groupByVoice(rows).map(voiceGroupToSSML);
   return download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
 }
 
-function toSSML(rows) {
-  var parts = [];
+function groupByVoice(rows) {
+  var groups = [];
   rows.forEach(function(row) {
-    var part;
-    if (parts.length && (!row.voice || parts[parts.length-1].voiceId == row.voice.value)) part = parts[parts.length-1];
-    else parts.push(part = {voiceId: row.voice.value, ssml: ""});
-    if (row.pause) part.ssml += "<break time='" + row.pause.value + "s'/>";
-    if (row.volume || row.rate || row.pitch) {
-      part.ssml += "<prosody";
-      if (row.volume) part.ssml += " volume='" + row.volume.value + "'";
-      if (row.rate) part.ssml += " rate='" + row.rate.value + "'";
-      if (row.pitch) part.ssml += " pitch='" + row.pitch.value + "'";
-      part.ssml += ">";
+    var group = groups.length ? groups[groups.length-1] : null;
+    if (!group || row.voice && row.voice != group.voice) groups.push({voice: row.voice, rows: [row]});
+    else group.rows.push(row);
+  })
+  return groups;
+}
+
+function voiceGroupToSSML(vg) {
+  return {
+    voiceId: vg.voice.value,
+    ssml: "<speak>" + groupByProsody(vg.rows).map(prosodyGroupToSSML).join(" ") + "</speak>"
+  }
+}
+
+function groupByProsody(rows) {
+  var groups = [];
+  rows.forEach(function(row) {
+    var group = groups.length ? groups[groups.length-1] : null;
+    if (!group || row.volume && row.volume != group.volume || row.rate && row.rate != group.rate || row.pitch && row.pitch != group.pitch) {
+      groups.push({
+        volume: row.volume || group && group.volume,
+        rate: row.rate || group && group.rate,
+        pitch: row.pitch || group && group.pitch,
+        rows: [row]
+      })
     }
-    if (row.text) part.ssml += row.text;
-    if (row.volume || row.rate || row.pitch) part.ssml += "</prosody>";
-    part.ssml += " ";
+    else {
+      group.rows.push(row);
+    }
   })
-  parts.forEach(function(part) {
-    part.ssml = "<speak>" + part.ssml + "</speak>";
-  })
-  return parts;
+  return groups;
+}
+
+function prosodyGroupToSSML(pg) {
+  var ssml = "";
+  if (pg.volume || pg.rate || pg.pitch) {
+    ssml += "<prosody";
+    if (pg.volume) ssml += " volume='" + pg.volume.value + "'";
+    if (pg.rate) ssml += " rate='" + pg.rate.value + "'";
+    if (pg.pitch) ssml += " pitch='" + pg.pitch.value + "'";
+    ssml += ">";
+  }
+  ssml += pg.rows.map(function(row) {return row.text}).join(" ");
+  if (pg.volume || pg.rate || pg.pitch) ssml += "</prosody>";
+  return ssml;
 }
 
 
