@@ -126,7 +126,7 @@ function prosodyGroupToSSML(pg) {
 function rowToSSML(row) {
   var ssml = "";
   if (row.pause) ssml += "<break time='" + row.pause.value + "s'/>";
-  ssml += row.text;
+  if (row.text) ssml += row.text;
   return ssml;
 }
 
