@@ -118,8 +118,15 @@ function prosodyGroupToSSML(pg) {
     if (pg.pitch) ssml += " pitch='" + pg.pitch.value + "'";
     ssml += ">";
   }
-  ssml += pg.rows.map(function(row) {return row.text}).join(" ");
+  ssml += pg.rows.map(rowToSSML).join(" ");
   if (pg.volume || pg.rate || pg.pitch) ssml += "</prosody>";
+  return ssml;
+}
+
+function rowToSSML(row) {
+  var ssml = "";
+  if (row.pause) ssml += "<break time='" + row.pause.value + "s'/>";
+  ssml += row.text;
   return ssml;
 }
 
