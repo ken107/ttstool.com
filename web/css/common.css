@@ -80,10 +80,16 @@ tr.add .viewer {
 }
 
 .hyper-controls {
-  position: absolute;
+  float: right;
   top: 15px;
   right: 15px;
 }
 .hyper-controls i.button {
   font-size: xx-large;
+}
+
+.feedback-tab {
+  position: fixed;
+  bottom: 5px;
+  left: 70%;
 }

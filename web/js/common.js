@@ -132,9 +132,14 @@ function rowToSSML(row) {
 
 
 function RemoteTTS(host) {
-  var audio = document.createElement("AUDIO");
+  var audio;
 
   this.speak = function(ssmlParts, onEnd) {
+    if (!audio) {
+      audio = document.createElement("AUDIO");
+      audio.src = "sound/silence.mp3";
+      audio.play();
+    }
     return create(ssmlParts)
       .then(function(result) {
         return new Promise(function(fulfill) {

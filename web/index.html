@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>TTS Narrator | LSD Software</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Create voice narration using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube video; powered by Amazon Polly.">
   <meta property="og:title" content="TTS Narrator | LSD Software">
   <meta property="og:description" content="Create voice narration using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube video; powered by Amazon Polly.">
@@ -13,7 +14,12 @@
   <script src="js/common.js"></script>
 </head>
 <body bind-var-voices="null">
-  <h2>Text-to-Speech Tool</h2>
+  <div style="margin: 0 auto; max-width: 1024px;">
+    <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
+      <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+      <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+    </div>
+    <h1>Text-to-Speech Tool</h1>
   <div bind-statement-1="$(thisElem).toggle(#voices == null)">
     Select language:
     <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.lang == thisElem.value})">
@@ -80,9 +86,9 @@
       </td>
     </tr>
   </table>
-  <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
-    <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
-    <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+  </div>
+  <div class="feedback-tab">
+    <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
   </div>
 </body>
 </html>
