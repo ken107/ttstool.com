@@ -16,13 +16,8 @@ i.button {
 table.rows {
   margin-top: 10px;
   width: 100%;
-  border-collapse: collapse;
-}
-tr:nth-child(odd) .viewer, tr:nth-child(odd) .editor {
-  background-color: #eef;
-}
-tr:nth-child(even) .viewer, tr:nth-child(even) .editor {
-  background-color: #ddf;
+  border-collapse: separate;
+  border-spacing: 3px;
 }
 tr.add .viewer {
   background-color: white;
@@ -30,7 +25,8 @@ tr.add .viewer {
 
 .viewer {
   padding: 10px;
-  border-radius: 3px;
+  border-radius: 5px;
+  background-color: #eef;
 }
 .viewer > div:not(:first-child) {
   margin-top: 5px;
@@ -42,7 +38,8 @@ tr.add .viewer {
 
 .editor {
   padding: 10px;
-  border-radius: 3px;
+  border-radius: 5px;
+  background-color: #ddf;
 }
 .editor > div:not(:first-child) {
   margin-top: 5px;

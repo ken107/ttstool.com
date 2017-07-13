@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://cdn.rawgit.com/ken107/databind-js/master/databind.js"></script>
+  <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
 </head>
 <body bind-var-voices="null">
@@ -42,7 +42,7 @@
             <span class="volume label" bind-statement-1="$(thisElem).toggle(#row.volume != null)">volume: {{#row.volume.desc}}</span>
             <span class="rate label" bind-statement-1="$(thisElem).toggle(#row.rate != null)">rate: {{#row.rate.desc}}</span>
             <span class="pitch label" bind-statement-1="$(thisElem).toggle(#row.pitch != null)">pitch: {{#row.pitch.desc}}</span>
-            {{#row.text}}
+            <span bind-statement-1="$(thisElem).html(#row.text.replace(/\n/g, '<br/>'))"></span>
           </div>
           <div style="clear: both;"></div>
         </div>
@@ -51,7 +51,7 @@
             <i class="material-icons button" bind-event-click="#editIndex = null">check</i>
           </div>
           <div>
-            <input type="number" size="5" placeholder="Pause" min="0" max="10" bind-event-change="#row.pause = {value:thisElem.value}"
+            <input type="number" size="5" placeholder="Pause" min="0" max="10" bind-event-change="#row.pause = thisElem.value ? {value:thisElem.value} : null"
               bind-statement-1="thisElem.value = #row.pause ? #row.pause.value : ''" />
             <select bind-event-change="#row.voice = #voices[thisElem.value]" bind-statement-1="thisElem.value = #row.voice ? #voices.indexOf(#row.voice) : ''">
               <option value="">voice</option>
@@ -71,7 +71,7 @@
             </select>
           </div>
           <div class="text">
-            <textarea rows="4" placeholder="Enter text to be spoken." bind-event-change="#row.text = thisElem.value" bind-statement-1="thisElem.value = #row.text || ''">{{#row.text}}</textarea>
+            <textarea rows="4" placeholder="Enter text to be spoken." bind-event-change="#row.text = thisElem.value" bind-statement-1="thisElem.value = #row.text || ''"></textarea>
           </div>
         </div>
       </td>
