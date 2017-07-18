@@ -1,8 +1,8 @@
 {
-  "name": "Text-to-Speech Narration Tool",
+  "name": "Text-to-Speech Voice Narration Tool",
   "short_name": "Text-to-Speech Tool",
   "description": "Convert text to speech and create narrations with multiple voices, download as MP3.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 2,
   "app": {
     "urls": [
