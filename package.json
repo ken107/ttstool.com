@@ -1,6 +1,6 @@
 {
   "scripts": {
     "start": "http-server web",
-    "deploy": "aws s3 sync --profile=s3 --delete --metadata-directive REPLACE --acl public-read --cache-control max-age=1800,public web s3://ttstool.com"
+    "deploy": "aws s3 sync --profile=s3 --delete --metadata-directive REPLACE --cache-control max-age=1800,public web s3://ttstool.com"
   }
 }
