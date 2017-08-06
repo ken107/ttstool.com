@@ -46,7 +46,7 @@ pitches = [
 
 rows = [{}];
 editIndex = 0;
-tts = new RemoteTTS("https://support.lsdsoftware.com:30112");
+tts = new RemoteTTS("https://support.lsdsoftware.com");
 tts.getVoices()
   .then(results => {
     results.sort(function(a, b) {
