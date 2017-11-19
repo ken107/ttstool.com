@@ -86,7 +86,7 @@ function groupByVoice(rows) {
 function voiceGroupToSSML(vg) {
   return {
     voiceId: vg.voice.value,
-    ssml: "<speak>" + groupByProsody(vg.rows).map(prosodyGroupToSSML).join(" ") + "</speak>"
+    ssml: "<speak version=\"1.0\" xml:lang=\"" + vg.voice.lang + "\">" + groupByProsody(vg.rows).map(prosodyGroupToSSML).join(" ") + "</speak>"
   }
 }
 
