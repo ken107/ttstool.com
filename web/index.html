@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://ken107.github.io/read-aloud/js/readaloud.min.js"></script>
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
 </head>
@@ -31,13 +32,22 @@
       <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
     </div>
     <h1>Text-to-Speech Tool</h1>
-  <div bind-statement-1="$(thisElem).toggle(#voices == null)">
-    Select language:
-    <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.lang == thisElem.value})">
-      <option value=""></option>
-      <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i].value">{{#languages[#i].desc}}</option>
-    </select>
-  </div>
+    <div bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
+      <div>
+        Select voice provider:
+        <select bind-event-change="#provider = thisElem.value">
+          <option value="Amazon">Amazon</option>
+          <option value="Microsoft">Microsoft</option>
+        </select>
+      </div>
+      <div style="margin-top: 10px;" bind-var-languages="this.getLanguages(#allVoices.filter(function(x) {return x.provider == #provider}))">
+        Select language:
+        <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.provider == #provider && voice.langName.slice(-thisElem.value.length) == thisElem.value})">
+          <option value=""></option>
+          <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i]">{{#languages[#i]}}</option>
+        </select>
+      </div>
+    </div>
   <table class="rows" bind-statement-1="$(thisElem).toggle(#voices != null)">
     <tr bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
       <td>

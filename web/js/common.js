@@ -1,23 +1,4 @@
-languages = [
-  {value:"en", desc:"English"},
-  {value:"ja", desc:"Japanese"},
-  {value:"tr", desc:"Turkish"},
-  {value:"sv", desc:"Swedish"},
-  {value:"ru", desc:"Russian"},
-  {value:"ro", desc:"Romanian"},
-  {value:"pt", desc:"Portuguese"},
-  {value:"pl", desc:"Polish"},
-  {value:"nl", desc:"Dutch"},
-  {value:"nb", desc:"Norwegian"},
-  {value:"it", desc:"Italian"},
-  {value:"is", desc:"Icelandic"},
-  {value:"fr", desc:"French"},
-  {value:"es", desc:"Spanish"},
-  {value:"de", desc:"German"},
-  {value:"da", desc:"Danish"},
-  {value:"cy", desc:"Welsh"}
-]
-allVoices = [];
+allVoices = getVoices();
 volumes = [
   {value:"default", desc:"default"},
   {value:"silent", desc:"silent"},
@@ -47,21 +28,41 @@ pitches = [
 rows = [{}];
 editIndex = 0;
 tts = new RemoteTTS("https://support.lsdsoftware.com");
-tts.getVoices()
-  .then(results => {
-    results.sort(function(a, b) {
-      return a.LanguageCode.localeCompare(b.LanguageCode) || a.Id.localeCompare(b.Id);
+
+
+function getVoices() {
+  var matcher = /^(Microsoft|Amazon) (.+) \((.+?)\)$/;
+  return readAloudManifest.tts_engine.voices
+    .filter(function(voice) {
+      return matcher.test(voice.voice_name);
     })
-    allVoices = results.map(function(voice) {
+    .map(function(voice) {
+      var match = matcher.exec(voice.voice_name);
       return {
-        lang: voice.LanguageCode.split("-")[0],
-        name: voice.Name,
-        value: voice.Id,
-        desc: voice.Name + " (" + voice.LanguageName + ")"
+        provider: match[1],
+        id: voice.voice_name,
+        name: match[3],
+        desc: match[3] + " (" + match[2] + ")",
+        gender: voice.gender,
+        langCode: voice.lang,
+        langName: match[2]
       }
     })
-  })
+}
 
+function getLanguages(voices) {
+  var groups = voices.groupBy(function(voice) {
+    var tokens = voice.langName.split(/\s+/);
+    return tokens[tokens.length-1];
+  })
+  return Object.keys(groups).sort();
+}
+
+Array.prototype.groupBy = function(keySelector, valueSelector) {
+  var result = {};
+  for (var i=0; i<this.length; i++) result[keySelector(this[i])] = (valueSelector ? valueSelector(this[i]) : this[i]);
+  return result;
+}
 
 function playAll(download) {
   if (!rows.length) return;
@@ -85,8 +86,8 @@ function groupByVoice(rows) {
 
 function voiceGroupToSSML(vg) {
   return {
-    voiceId: vg.voice.value,
-    ssml: "<speak version=\"1.0\" xml:lang=\"" + vg.voice.lang + "\">" + groupByProsody(vg.rows).map(prosodyGroupToSSML).join(" ") + "</speak>"
+    voiceId: vg.voice.id,
+    ssml: "<speak version=\"1.0\" xml:lang=\"" + vg.voice.langCode + "\">" + groupByProsody(vg.rows).map(prosodyGroupToSSML).join(" ") + "</speak>"
   }
 }
 
@@ -166,18 +167,6 @@ function RemoteTTS(host) {
 
   this.stop = function() {
     audio.pause();
-  }
-
-  this.getVoices = function() {
-    return new Promise(function(fulfill, reject) {
-      $.get({
-        url: host + "/read-aloud/list-voices/amazon",
-        success: fulfill,
-        error: function(xhr, status, error) {
-          reject(status || error);
-        }
-      })
-    })
   }
 
   function create(parts) {
