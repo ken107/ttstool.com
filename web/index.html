@@ -30,33 +30,38 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://ken107.github.io/read-aloud/js/readaloud.min.js"></script>
+  <script src="https://readaloud.app/js/readaloud.min.js"></script>
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
 </head>
 <body bind-var-voices="null">
-  <div style="margin: 0 auto; max-width: 1024px;">
+  <div class="page">
     <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
       <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
       <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
     </div>
     <h1>Text-to-Speech Tool</h1>
-    <div bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
-      <div>
-        Select voice provider:
-        <select bind-event-change="#provider = thisElem.value">
-          <option value="Amazon">Amazon</option>
-          <option value="Microsoft">Microsoft</option>
-        </select>
-      </div>
-      <div style="margin-top: 10px;" bind-var-languages="this.getLanguages(#allVoices.filter(function(x) {return x.provider == #provider}))">
-        Select language:
-        <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.provider == #provider && voice.langName.slice(-thisElem.value.length) == thisElem.value})">
-          <option value=""></option>
-          <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i]">{{#languages[#i]}}</option>
-        </select>
-      </div>
-    </div>
+    <table bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
+      <tr>
+        <td>Select voice provider:&nbsp;&nbsp;</td>
+        <td>
+          <select bind-event-change="#provider = thisElem.value">
+            <option value="Amazon">Amazon</option>
+            <option value="Microsoft">Microsoft</option>
+          </select>
+        </td>
+      </tr>
+      <tr bind-var-languages="this.getLanguages(#allVoices.filter(function(x) {return x.provider == #provider}))">
+        <td>Select language:</td>
+        <td>
+          <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.provider == #provider && voice.langName.slice(-thisElem.value.length) == thisElem.value})">
+            <option value=""></option>
+            <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i]">{{#languages[#i]}}</option>
+          </select>
+        </td>
+      </tr>
+    </table>
   <table class="rows" bind-statement-1="$(thisElem).toggle(#voices != null)">
     <tr bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
       <td>
@@ -117,8 +122,13 @@
     </tr>
   </table>
   </div>
-  <div class="feedback-tab">
-    <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+  <div class="dangling-footer">
+    <div class="feedback-tab">
+      <a href="ssml-editor.html">Raw SSML editor</a>
+      &nbsp;|&nbsp;
+      <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+    </div>
+    <div style="clear: both;"></div>
   </div>
 </body>
 </html>

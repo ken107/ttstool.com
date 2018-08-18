@@ -1,6 +1,15 @@
 body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: small;
+  background: url(/img/logo-bg.png);
+}
+.page {
+  margin: 0 auto;
+  max-width: 1024px;
+  min-height: 350px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
 }
 textarea {
   box-sizing: border-box;
@@ -85,8 +94,24 @@ tr.add .viewer {
   font-size: xx-large;
 }
 
+.error {
+  margin-top: 10px;
+  color: red;
+  font-weight: bold;
+  display: none;
+}
+
+.dangling-footer {
+  margin: 0 auto;
+  width: 1024px;
+}
 .feedback-tab {
-  position: fixed;
-  bottom: 5px;
-  left: 70%;
+  float: right;
+  margin: 0 15px;
+  padding: 5px 25px;
+  border-radius: 0 0 5px 5px;
+  background-color: #d0a507;
+}
+.feedback-tab a {
+  color: black;
 }

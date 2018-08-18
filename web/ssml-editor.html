@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-123643790-2');
+  </script>
+
+  <title>TTS Tool</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly.">
+  <meta property="og:title" content="TTS Tool">
+  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly.">
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://readaloud.app/js/readaloud.min.js"></script>
+  <script src="js/databind.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/ssml-editor.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voice != null)">
+      <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+      <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+    </div>
+    <h1>Text-to-Speech Tool</h1>
+    <table bind-statement-1="$(thisElem).toggle(#voice == null)">
+      <tr>
+        <td>Select voice:&nbsp;&nbsp;</td>
+        <td>
+          <select bind-event-change="#voice = #allVoices[thisElem.value]">
+            <option value=""></option>
+            <option bind-repeater-i="#allVoices.length" bind-statement-1="thisElem.value = #i">{{#allVoices[#i].voice_name}}</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    <div class="editor" bind-statement-1="$(thisElem).toggle(#voice != null)">
+      <textarea placeholder="Enter SSML here" rows="20"
+        bind-statement-1="if (#voice) setPlaceholder(thisElem, #voice.lang)"></textarea>
+    </div>
+    <div class="error">
+      XML validation failed, please check your XML and try again.
+    </div>
+  </div>
+  <div class="dangling-footer">
+    <div class="feedback-tab">
+      <a href="index.html">Main editor</a>
+      &nbsp;|&nbsp;
+      <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+</body>
+</html>
