@@ -140,7 +140,7 @@ function RemoteTTS(host) {
       .then(function(result) {
         return new Promise(function(fulfill) {
           audio.pause();
-          audio.src = host + "/read-aloud/get?q=" + result.join(",");
+          audio.src = host + "/ttstool/getParts?q=" + result.join(",");
           audio.onplay = fulfill;
           audio.onerror =
           audio.onended = onEnd;
@@ -151,7 +151,7 @@ function RemoteTTS(host) {
   this.download = function(ssmlParts) {
     return create(ssmlParts)
       .then(function(result) {
-        location.href = host + "/read-aloud/get?q=" + result.join(",") + "&saveAs=narration.mp3";
+        location.href = host + "/ttstool/getParts?q=" + result.join(",") + "&saveAs=narration.mp3";
       })
   }
   this.isSpeaking = function(callback) {
@@ -163,7 +163,7 @@ function RemoteTTS(host) {
   function create(parts) {
     return new Promise(function(fulfill, reject) {
       $.post({
-        url: host + "/read-aloud/create",
+        url: host + "/ttstool/createParts",
         data: JSON.stringify(parts),
         contentType: "application/json",
         success: fulfill,
