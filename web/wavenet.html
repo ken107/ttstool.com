@@ -167,8 +167,13 @@
     </div>
     <div bind-statement-1="$(thisElem).toggle(#state == 1)">
       <form bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value); return false;">
-        <div class="form-group">
-          <div class="form-text text-muted">
+        <div class="form-group"
+          bind-var-visible="true"
+          bind-statement-1="$(thisElem).toggle(#visible)">
+          <div class="alert alert-info">
+            <button type="button" class="close" aria-label="Close" bind-event-click="#visible = false">
+              <span aria-hidden="true">&times;</span>
+            </button>
             Each time you click Synthesize, a request is made to Google Cloud Text-to-Speech service,
             and the corresponding number of characters will be billed.  So <u>only click when you're ready</u>.
             Currently there's no API to get the total number of characters you have used, so be conservative
