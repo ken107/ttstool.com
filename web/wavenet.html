@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-123643790-2');
+  </script>
+
+  <title>TTS Tool</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly, Google Wavenet, and Microsoft Azure.">
+  <meta property="og:title" content="TTS Tool">
+  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly, Google Wavenet, and Microsoft Azure.">
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js" integrity="sha384-zDnhMsjVZfS3hiP7oCBRmfjkQC4fzxVxFhBx8Hkz2aZX8gEvA/jsP3eXRCvzTofP" crossorigin="anonymous"></script>
+  <script src="https://assets.lsdsoftware.com/databind.js"></script>
+  <script src="js/common.js"></script>
+
+  <style>
+  h2 {
+    margin: 1rem 0;
+  }
+  </style>
+
+  <script>
+    state = 0;
+    apiKey = null;
+    allVoices = null;
+    languages = null;
+    language = null;
+    voices = null;
+    error = null;
+    audioUrl = null;
+    lastText = null;
+    totalChars = 0;
+
+    function getLangName(lang) {
+      return langMap[lang] || langMap[lang.split('-')[0]] || lang || "Unknown";
+    }
+
+    function onSubmit0(key) {
+      apiKey = key;
+      error = null;
+      $ajax({
+        url: googleServiceUrl + "/voices?key=" + apiKey,
+        dataType: "json"
+      })
+      .then(function(res) {
+        allVoices = res.voices
+          .map(function(voice) {
+            return {
+              name: voice.name,
+              lang: voice.languageCodes[0],
+              gender: voice.ssmlGender.charAt(0),
+            }
+          })
+        languages = Object.keys(allVoices.groupBy(function(voice) {return voice.lang}))
+          .sort(function(a, b) {
+            return getLangName(a).localeCompare(getLangName(b));
+          })
+        state = 2;
+      })
+      .catch(function(err) {
+        error = err;
+      })
+    }
+
+    function onSubmit2(lang) {
+      language = lang;
+      voices = allVoices.filter(function(voice) {return voice.lang == lang});
+      state = 1;
+    }
+
+    function onSubmit1(voiceName, text) {
+      text = text.trim();
+      if (!text) {
+        error = {message: "Enter some text"};
+        return;
+      }
+      if (text == lastText) return;
+      audioUrl = null;
+      error = null;
+      $ajax({
+        method: "POST",
+        url: googleServiceUrl + "/text:synthesize?key=" + apiKey,
+        contentType: "application/json",
+        data: JSON.stringify({
+          input: {
+            ssml: text
+          },
+          voice: {
+            languageCode: language,
+            name: voiceName
+          },
+          audioConfig: {
+            audioEncoding: "mp3"
+          }
+        }),
+        dataType: "json"
+      })
+      .then(function(data) {
+        audioUrl = "data:audio/mpeg;base64," + data.audioContent;
+        lastText = text;
+        totalChars += removeTags(text).length;
+      })
+      .catch(function(err) {
+        error = err;
+      })
+    }
+
+    function removeTags(text) {
+      return text.replace(/<.*?>/g, '');
+    }
+  </script>
+</head>
+<body>
+  <div class="container main">
+    <h2>Google Wavenet TTS</h2>
+    <div bind-statement-1="$(thisElem).toggle(#state == 0)">
+      <form bind-event-submit="this.onSubmit0(thisElem.key.value); return false;">
+        <div class="form-group">
+          <label>API Key:</label>
+          <input class="form-control" type="text" name="key"/>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger">{{#error.message}}</div>
+        </div>
+      </form>
+    </div>
+    <div bind-statement-1="$(thisElem).toggle(#state == 2)">
+      <form bind-event-submit="this.onSubmit2(thisElem.lang.value); return false;">
+        <div class="form-group">
+          <label>Select Language:</label>
+          <select class="form-control" name="lang">
+            <option bind-repeater-i="#languages.length"
+              bind-statement-1="thisElem.value = #languages[#i]">{{getLangName(#languages[#i])}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger">{{#error.message}}</div>
+        </div>
+      </form>
+    </div>
+    <div bind-statement-1="$(thisElem).toggle(#state == 1)">
+      <form bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value); return false;">
+        <div class="form-group">
+          <div class="form-text text-muted">
+            Each time you click Synthesize, a request is made to Google Cloud Text-to-Speech service,
+            and the corresponding number of characters will be billed.  So <u>only click when you're ready</u>.
+            Currently there's no API to get the total number of characters you have used, so be conservative
+            to avoid overrunning your <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">free tier</a>.
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Select Voice:</label>
+          <select class="form-control" name="voice">
+            <option bind-repeater-i="#voices.length"
+              bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
+          </select>
+        </div>
+        <div class="form-group" bind-var-char-count="0">
+          <label>Enter Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a>:</label>
+          <textarea class="form-control" name="text" rows="10"
+            bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
+          <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
+          <small class="form-text text-muted">{{#charCount}} chars</small>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Synthesize</button>
+        </div>
+        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
+          <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+        </div>
+        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger">{{#error.message}}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
