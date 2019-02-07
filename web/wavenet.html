@@ -42,6 +42,7 @@
 
   <script>
     state = 0;
+    savedApiKey = getCookie("apiKey");
     apiKey = null;
     allVoices = null;
     languages = null;
@@ -56,7 +57,7 @@
       return langMap[lang] || langMap[lang.split('-')[0]] || lang || "Unknown";
     }
 
-    function onSubmit0(key) {
+    function onSubmit0(key, remember) {
       apiKey = key;
       error = null;
       $ajax({
@@ -64,6 +65,7 @@
         dataType: "json"
       })
       .then(function(res) {
+        setCookie("apiKey", apiKey, remember ? 7 : -1);
         allVoices = res.voices
           .map(function(voice) {
             return {
@@ -135,10 +137,18 @@
   <div class="container main">
     <h2>Google Wavenet TTS</h2>
     <div bind-statement-1="$(thisElem).toggle(#state == 0)">
-      <form bind-event-submit="this.onSubmit0(thisElem.key.value); return false;">
+      <form bind-event-submit="this.onSubmit0(thisElem.key.value, thisElem.remember.checked); return false;">
         <div class="form-group">
           <label>API Key:</label>
-          <input class="form-control" type="text" name="key"/>
+          <input class="form-control" type="text" name="key" bind-statement-1="thisElem.value = savedApiKey"/>
+        </div>
+        <div class="form-group">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="checkbox" name="remember" class="form-check-input" bind-statement-1="thisElem.checked = !!savedApiKey">
+              Remember me
+            </label>
+          </div>
         </div>
         <div class="form-group">
           <button type="submit" class="btn btn-primary">Submit</button>
