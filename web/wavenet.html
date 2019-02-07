@@ -195,10 +195,10 @@
           <small class="form-text text-muted">{{#charCount}} chars</small>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-primary">Synthesize</button>
-        </div>
-        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
-          <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+          <button type="submit" class="btn btn-primary" style="margin-right: 50px;">Synthesize</button>
+          <div style="display: inline-block; vertical-align: top;" bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
+            <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+          </div>
         </div>
         <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
           <div class="alert alert-danger">{{#error.message}}</div>
