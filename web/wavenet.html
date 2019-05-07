@@ -50,7 +50,9 @@
     voices = null;
     error = null;
     audioUrl = null;
+    lastVoice = null;
     lastText = null;
+    lastFormat = null;
     totalChars = 0;
 
     function getLangName(lang) {
@@ -91,13 +93,13 @@
       state = 1;
     }
 
-    function onSubmit1(voiceName, text) {
+    function onSubmit1(voiceName, text, format) {
       text = text.trim();
       if (!text) {
         error = {message: "Enter some text"};
         return;
       }
-      if (text == lastText) return;
+      if (voiceName == lastVoice && text == lastText && format == lastFormat) return;
       audioUrl = null;
       error = null;
       $ajax({
@@ -113,14 +115,16 @@
             name: voiceName
           },
           audioConfig: {
-            audioEncoding: "mp3"
+            audioEncoding: format
           }
         }),
         dataType: "json"
       })
       .then(function(data) {
         audioUrl = "data:audio/mpeg;base64," + data.audioContent;
+        lastVoice = voiceName;
         lastText = text;
+        lastFormat = format;
         totalChars += removeTags(text).length;
       })
       .catch(function(err) {
@@ -176,7 +180,7 @@
       </form>
     </div>
     <div bind-statement-1="$(thisElem).toggle(#state == 1)">
-      <form bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value); return false;">
+      <form bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value, thisElem.format.value); return false;">
         <div class="form-group"
           bind-var-visible="true"
           bind-statement-1="$(thisElem).toggle(#visible)">
@@ -203,6 +207,14 @@
             bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
           <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
           <small class="form-text text-muted">{{#charCount}} chars</small>
+        </div>
+        <div class="form-group">
+          <label>Output Format:</label>
+          <select class="form-control" name="format">
+            <option value="OGG_OPUS">OGG OPUS</option>
+            <option value="MP3">MP3</option>
+            <option value="LINEAR16">WAV</option>
+          </select>
         </div>
         <div class="form-group">
           <button type="submit" class="btn btn-primary" style="margin-right: 50px;">Synthesize</button>
