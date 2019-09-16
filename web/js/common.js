@@ -4,17 +4,28 @@ serviceHost = "https://support.lsdsoftware.com";
 googleServiceUrl = "https://texttospeech.googleapis.com/v1beta1";
 
 langMap = {
+  "ar": "Arabic",
+  "cmn": "Mandarin",
+  "cs": "Czech",
   "da": "Danish",
   "de": "German",
+  "el": "Greek",
   "en-AU": "Australian English",
   "en-GB": "British English",
   "en-US": "US English",
   "en": "English",
+  "es": "Spanish",
+  "fi": "Finnish",
+  "fil": "Filipino",
   "fr-CA": "Canadian French",
   "fr": "French",
+  "hi": "Hindi",
+  "hu": "Hungarian",
+  "id": "Indonesian",
   "it": "Italian",
   "ja": "Japanese",
   "ko": "Korean",
+  "nb": "Norwegian",
   "nl": "Dutch",
   "pl": "Polish",
   "pt-BR": "Brazilian Portuguese",
@@ -24,7 +35,7 @@ langMap = {
   "sv": "Swedish",
   "tr": "Turkish",
   "uk": "Ukrainian",
-  "es": "Spanish",
+  "vi": "Vietnamese",
 }
 
 

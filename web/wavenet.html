@@ -48,6 +48,7 @@
     languages = null;
     language = null;
     voices = null;
+    progress = 0;
     error = null;
     audioUrl = null;
     filename = null;
@@ -104,6 +105,7 @@
       audioUrl = null;
       filename = null;
       error = null;
+      progress++;
       $ajax({
         method: "POST",
         url: googleServiceUrl + "/text:synthesize?key=" + apiKey,
@@ -123,6 +125,7 @@
         dataType: "json"
       })
       .then(function(data) {
+        progress--;
         audioUrl = "data:audio/mpeg;base64," + data.audioContent;
         filename = getFilename(format);
         lastVoice = voiceName;
@@ -131,19 +134,24 @@
         totalChars += removeTags(text).length;
       })
       .catch(function(err) {
+        progress--;
         error = err;
       })
     }
 
     function getFilename(format) {
       var d = new Date();
-      var name = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+      var name = d.getFullYear() + "-" + twoD(d.getMonth()+1) + "-" + twoD(d.getDate()) + " " + twoD(d.getHours()) + "-" + twoD(d.getMinutes()) + "-" + twoD(d.getSeconds());
       switch (format) {
         case "OGG_OPUS": return name + ".ogg";
         case "MP3": return name + ".mp3";
         case "LINEAR16": return name + ".wav";
         default: return name;
       }
+    }
+
+    function twoD(n) {
+      return n < 10 ? '0' + n : n;
     }
 
     function removeTags(text) {
@@ -231,11 +239,16 @@
           </select>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-primary">Synthesize</button>
+          <button type="submit" class="btn btn-primary" bind-statement-1="thisElem.disabled = #progress > 0">
+            <div class="spinner-border spinner-border-sm" role="status" bind-statement-1="$(thisElem).toggle(#progress > 0)">
+              <span class="sr-only">Loading...</span>
+            </div>
+            Synthesize
+          </button>
           <a class="btn btn-secondary"
             bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
             bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
-          <div class="ml-4" style="display: inline-block; vertical-align: top;"
+          <div class="mt-4"
             bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
             <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
           </div>
