@@ -50,6 +50,7 @@
     voices = null;
     error = null;
     audioUrl = null;
+    filename = null;
     lastVoice = null;
     lastText = null;
     lastFormat = null;
@@ -101,6 +102,7 @@
       }
       if (voiceName == lastVoice && text == lastText && format == lastFormat) return;
       audioUrl = null;
+      filename = null;
       error = null;
       $ajax({
         method: "POST",
@@ -122,6 +124,7 @@
       })
       .then(function(data) {
         audioUrl = "data:audio/mpeg;base64," + data.audioContent;
+        filename = getFilename(format);
         lastVoice = voiceName;
         lastText = text;
         lastFormat = format;
@@ -130,6 +133,17 @@
       .catch(function(err) {
         error = err;
       })
+    }
+
+    function getFilename(format) {
+      var d = new Date();
+      var name = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+      switch (format) {
+        case "OGG_OPUS": return name + ".ogg";
+        case "MP3": return name + ".mp3";
+        case "LINEAR16": return name + ".wav";
+        default: return name;
+      }
     }
 
     function removeTags(text) {
@@ -217,8 +231,12 @@
           </select>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-primary" style="margin-right: 50px;">Synthesize</button>
-          <div style="display: inline-block; vertical-align: top;" bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
+          <button type="submit" class="btn btn-primary">Synthesize</button>
+          <a class="btn btn-secondary"
+            bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
+            bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
+          <div class="ml-4" style="display: inline-block; vertical-align: top;"
+            bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
             <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
           </div>
         </div>
