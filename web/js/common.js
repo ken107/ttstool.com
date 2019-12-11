@@ -45,6 +45,20 @@ function polyfills() {
     for (var i=0; i<this.length; i++) result[keySelector(this[i])] = (valueSelector ? valueSelector(this[i]) : this[i]);
     return result;
   }
+
+  if (!Promise.prototype.finally) {
+    Object.defineProperty(Promise.prototype, 'finally', {
+      value: function(callback) {
+        var promise = this;
+        function chain() {
+          return Promise.resolve(callback()).then(function() {return promise});
+        }
+        return promise.then(chain, chain);
+      },
+      configurable: true,
+      writable: true
+    })
+  }
 }
 
 function $ajax(opts) {

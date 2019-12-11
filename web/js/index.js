@@ -29,6 +29,8 @@ pitches = [
 tts = new RemoteTTS(serviceHost);
 rows = [{}];
 editIndex = 0;
+globalError = null;
+globalProgress = 0;
 
 
 function getVoices() {
@@ -67,7 +69,15 @@ function playAll(download) {
     return;
   }
   var ssmlParts = groupByVoice(rows).map(voiceGroupToSSML);
-  return download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
+  var promise = download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
+  globalProgress++;
+  promise
+    .catch(function(err) {
+      globalError = err;
+    })
+    .finally(function() {
+      globalProgress--;
+    })
 }
 
 function groupByVoice(rows) {
@@ -168,7 +178,7 @@ function RemoteTTS(host) {
         contentType: "application/json",
         success: fulfill,
         error: function(xhr, status, error) {
-          reject(status || error);
+          reject(new Error(xhr && xhr.responseText.substr(0,200) || status || error));
         }
       })
     })

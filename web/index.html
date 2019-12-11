@@ -38,8 +38,13 @@
 <body bind-var-voices="null">
   <div class="page">
     <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
-      <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
-      <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+      <div bind-statement-1="$(thisElem).toggle(!#globalProgress)">
+        <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+        <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+      </div>
+      <div bind-statement-1="$(thisElem).toggle(!!#globalProgress)">
+        <div class="spinner"></div>
+      </div>
     </div>
     <h1>Text-to-Speech Tool</h1>
     <table bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
@@ -130,5 +135,8 @@
     </div>
     <div style="clear: both;"></div>
   </div>
+  <div class="alert alert-danger global-error-alert"
+    bind-statement-1="if (#globalError) $(thisElem).stop().show(0).delay(5000).hide(0); else $(thisElem).stop().hide(0)"
+    bind-event-click="$(thisElem).stop().hide(0)">Error: {{#globalError.message}}</div>
 </body>
 </html>

@@ -91,7 +91,13 @@ tr.add .viewer {
   right: 15px;
 }
 .hyper-controls i.button {
-  font-size: xx-large;
+  font-size: 2.5em;
+}
+.hyper-controls .spinner {
+  width: 2.5em;
+  height: 2.5em;
+  border-width: .5em;
+  box-sizing: border-box;
 }
 
 .error {
@@ -114,4 +120,27 @@ tr.add .viewer {
 }
 .feedback-tab a {
   color: black;
+}
+
+.global-error-alert {
+  position: fixed;
+  left: 20px;
+  bottom: 30px;
+  max-width: 30%;
+  padding: 10px 20px 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  background: #95d641;
+}
+
+.spinner {
+  border-style: solid;
+  border-color: #ccc;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
