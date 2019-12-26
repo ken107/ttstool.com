@@ -1,6 +1,6 @@
 polyfills();
 
-serviceHost = "https://support.lsdsoftware.com";
+serviceHost = "https://support.readaloud.app";
 googleServiceUrl = "https://texttospeech.googleapis.com/v1beta1";
 
 langMap = {
