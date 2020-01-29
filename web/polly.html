@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-123643790-2');
+  </script>
+
+  <title>TTS Tool</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly, Google Wavenet, and Microsoft Azure.">
+  <meta property="og:title" content="TTS Tool">
+  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly, Google Wavenet, and Microsoft Azure.">
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js" integrity="sha384-zDnhMsjVZfS3hiP7oCBRmfjkQC4fzxVxFhBx8Hkz2aZX8gEvA/jsP3eXRCvzTofP" crossorigin="anonymous"></script>
+  <script src="https://assets.lsdsoftware.com/databind.js"></script>
+  <script src="js/aws-sdk-2.610.0.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/polly.js"></script>
+
+  <style>
+  h2 {
+    margin: 1rem 0;
+  }
+  .my-overlay > :first-child {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    opacity: .2;
+  }
+  .my-overlay > :last-child {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+  }
+  </style>
+</head>
+<body bind-statement-1="this.loadVoiceList(#selectedEngine)"
+  bind-statement-2="this.loadLanguageList(#voiceList)"
+  bind-statement-3="this.filterVoiceList(#voiceList, #selectedLanguage)"
+  bind-statement-4="#languageList; #selectedLanguage = null"
+  bind-statement-5="#filteredVoiceList; #selectedVoice = null">
+  
+  <div class="container main">
+    <h2>Amazon Polly TTS</h2>
+    
+    <div bind-statement-1="$(thisElem).toggle(#page == 0)">
+      <form bind-event-submit="this.onSubmit0(thisElem.accessKeyId.value, thisElem.secretAccessKey.value, thisElem.rememberMe.checked); return false;">
+        <div class="form-group">
+          <label>Access Key ID:</label>
+          <input class="form-control" type="text" name="accessKeyId" autocomplete="off"
+            bind-statement-1="thisElem.value = #accessKeyId"/>
+        </div>
+        <div class="form-group">
+          <label>Secret Access Key:</label>
+          <input class="form-control" type="text" name="secretAccessKey" autocomplete="off"
+            bind-statement-1="thisElem.value = #secretAccessKey"/>
+        </div>
+        <div class="form-group">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input class="form-check-input" type="checkbox" name="rememberMe"
+                bind-statement-1="thisElem.checked = #rememberMe">
+              Save keys for 7 days
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger">{{#error.message}}</div>
+        </div>
+      </form>
+    </div>
+    
+    <div bind-statement-1="$(thisElem).toggle(#page == 1)">
+      <div class="form-group">
+        <div class="alert alert-info">
+          <button type="button" class="close" aria-label="Close"
+            bind-event-click="$(thisElem).closest('.form-group').hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          Each time you click Synthesize, a request is made to Amazon Text-to-Speech service,
+          and the corresponding number of characters will be billed.  So <u>only click when you're ready</u>.
+          Currently there's no API to get the total number of characters you have used, so be conservative.
+        </div>
+      </div>
+      <div class="form-group">
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedEngine || ''"
+          bind-event-change="#selectedEngine = thisElem.value">
+          <option value="">Select Engine</option>
+          <option value="standard">Standard</option>
+          <option value="neural">Neural</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedLanguage || ''"
+          bind-event-change="#selectedLanguage = thisElem.value">
+          <option value="">Select Language</option>
+          <option bind-repeater-i="#languageList.length"
+            bind-var-item="#languageList[#i]"
+            bind-statement-1="thisElem.value = #item.code">{{#item.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedVoice || ''"
+          bind-event-change="#selectedVoice = thisElem.value">
+          <option value="">Select Voice</option>
+          <option bind-repeater-i="#filteredVoiceList.length"
+            bind-var-item="#filteredVoiceList[#i]"
+            bind-statement-1="thisElem.value = #item.id">{{#item.name}}</option>
+        </select>
+      </div>
+      <div class="form-group"
+        bind-var-char-count="0"
+        bind-statement-1="#charCount = #selectedText ? removeTags(#selectedText).length : 0">
+        <label>Enter Text or <a target="_blank" href="https://docs.aws.amazon.com/polly/latest/dg/ssml.html">SSML</a>:</label>
+        <textarea class="form-control" name="text" rows="10"
+          bind-event-input="#selectedText = thisElem.value"></textarea>
+        <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
+        <small class="form-text text-muted">{{#charCount}} chars</small>
+      </div>
+      <div class="form-group">
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedFormat || ''"
+          bind-event-change="#selectedFormat = thisElem.value">
+          <option value="">Select Format</option>
+          <option value="mp3">MP3</option>
+          <option value="ogg_vorbis">OGG_VORBIS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button type="button" class="btn btn-primary"
+          bind-statement-1="thisElem.disabled = !#selectedText.trim() || !#selectedVoice || !#selectedFormat || #progress > 0"
+          bind-event-click="this.onSubmit1()">Synthesize</button>
+        <a class="btn btn-secondary"
+          bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
+          bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
+        <div class="mt-4"
+          bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
+          <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+        </div>
+      </div>
+      <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+        <div class="alert alert-danger">{{#error.message}}</div>
+      </div>
+    </div>
+  
+  </div>
+
+  <div class="my-overlay" bind-statement-1="$(thisElem).toggle(#progress > 0)">
+    <div></div>
+    <div>
+      <div class="spinner-border" role="status" style="width: 5em; height: 5em; border-width: .5em; margin: -2.5em 0 0 -2.5em">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

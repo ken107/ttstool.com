@@ -97,3 +97,7 @@ function setCookie(name, value, expiredays) {
 		document.cookie = name + "=" + escape(value) + "; path=/" + "; expires=" + exdate.toGMTString();
 	}
 }
+
+function clearCookie(name) {
+  setCookie(name, "", -1);
+}
