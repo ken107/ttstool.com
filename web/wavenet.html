@@ -58,7 +58,10 @@
     totalChars = 0;
 
     function getLangName(lang) {
-      return langMap[lang] || langMap[lang.split('-')[0]] || lang || "Unknown";
+      if (langMap[lang]) return langMap[lang];
+      var base = lang.split('-')[0];
+      if (langMap[base]) return langMap[base] + " (" + lang + ")";
+      return lang || "Unknown";
     }
 
     function onSubmit0(key, remember) {
