@@ -56,24 +56,25 @@
   }
   </style>
 </head>
-<body bind-statement-1="this.loadVoiceList(#selectedEngine)"
+<body bind-var-show-playback-settings="false" bind-var-playback-settings="{speed: 1}"
+  bind-statement-1="this.loadVoiceList(#selectedEngine)"
   bind-statement-2="this.loadLanguageList(#voiceList)"
   bind-statement-3="this.filterVoiceList(#voiceList, #selectedLanguage)"
   bind-statement-4="#languageList; #selectedLanguage = null"
   bind-statement-5="#filteredVoiceList; #selectedVoice = null">
-  
+
   <div class="container main">
     <h2>Amazon Polly TTS</h2>
     
     <div bind-statement-1="$(thisElem).toggle(#page == 0)">
       <form bind-event-submit="this.onSubmit0(thisElem.accessKeyId.value, thisElem.secretAccessKey.value, thisElem.rememberMe.checked); return false;">
         <div class="form-group">
-          <label>Access Key ID:</label>
+          Access Key ID
           <input class="form-control" type="text" name="accessKeyId" autocomplete="off"
             bind-statement-1="thisElem.value = #accessKeyId"/>
         </div>
         <div class="form-group">
-          <label>Secret Access Key:</label>
+          Secret Access Key
           <input class="form-control" type="text" name="secretAccessKey" autocomplete="off"
             bind-statement-1="thisElem.value = #secretAccessKey"/>
         </div>
@@ -82,7 +83,7 @@
             <label class="form-check-label">
               <input class="form-check-input" type="checkbox" name="rememberMe"
                 bind-statement-1="thisElem.checked = #rememberMe">
-              Save keys for 7 days
+              Remember for 7 days
             </label>
           </div>
         </div>
@@ -94,8 +95,35 @@
         </div>
       </form>
     </div>
-    
+
     <div bind-statement-1="$(thisElem).toggle(#page == 1)">
+      <div class="form-group">
+        Select Engine
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedEngine || ''"
+          bind-event-change="#selectedEngine = thisElem.value">
+          <option value=""></option>
+          <option value="standard">Standard</option>
+          <option value="neural">Neural</option>
+        </select>
+      </div>
+      <div class="form-group">
+        Select Language
+        <select class="form-control"
+          bind-statement-1="thisElem.value = #selectedLanguage || ''"
+          bind-event-change="#selectedLanguage = thisElem.value">
+          <option value=""></option>
+          <option bind-repeater-i="#languageList.length"
+            bind-var-item="#languageList[#i]"
+            bind-statement-1="thisElem.value = #item.code">{{#item.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button type="button" class="btn btn-primary" bind-event-click="#page = 2">OK</button>
+      </div>
+    </div>
+
+    <div bind-statement-1="$(thisElem).toggle(#page == 2)">
       <div class="form-group">
         <div class="alert alert-info">
           <button type="button" class="close" aria-label="Close"
@@ -106,25 +134,6 @@
           and the corresponding number of characters will be billed.  So <u>only click when you're ready</u>.
           Currently there's no API to get the total number of characters you have used, so be conservative.
         </div>
-      </div>
-      <div class="form-group">
-        <select class="form-control"
-          bind-statement-1="thisElem.value = #selectedEngine || ''"
-          bind-event-change="#selectedEngine = thisElem.value">
-          <option value="">Select Engine</option>
-          <option value="standard">Standard</option>
-          <option value="neural">Neural</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <select class="form-control"
-          bind-statement-1="thisElem.value = #selectedLanguage || ''"
-          bind-event-change="#selectedLanguage = thisElem.value">
-          <option value="">Select Language</option>
-          <option bind-repeater-i="#languageList.length"
-            bind-var-item="#languageList[#i]"
-            bind-statement-1="thisElem.value = #item.code">{{#item.name}}</option>
-        </select>
       </div>
       <div class="form-group">
         <select class="form-control"
@@ -139,7 +148,7 @@
       <div class="form-group"
         bind-var-char-count="0"
         bind-statement-1="#charCount = #selectedText ? removeTags(#selectedText).length : 0">
-        <label>Enter Text or <a target="_blank" href="https://docs.aws.amazon.com/polly/latest/dg/ssml.html">SSML</a>:</label>
+        Enter Text or <a target="_blank" href="https://docs.aws.amazon.com/polly/latest/dg/ssml.html">SSML</a>
         <textarea class="form-control" name="text" rows="10"
           bind-event-input="#selectedText = thisElem.value"></textarea>
         <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
@@ -161,9 +170,12 @@
         <a class="btn btn-secondary"
           bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
           bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
-        <div class="mt-4"
-          bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
-          <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+        <div class="mt-4 align-items-center"
+          bind-statement-1="$(thisElem).css('display', #audioUrl ? 'flex' : 'none')">
+          <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"
+            bind-statement-2="thisElem.defaultPlaybackRate = thisElem.playbackRate = #playbackSettings.speed"></audio>
+          <i class="material-icons" style="cursor: pointer"
+            bind-event-click="#showPlaybackSettings = true">settings</i>
         </div>
       </div>
       <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
@@ -181,5 +193,31 @@
       </div>
     </div>
   </div>
+
+  <div class="playback-settings-dialog modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    bind-statement-2="$(thisElem).modal(#showPlaybackSettings ? 'show' : 'hide')"
+    bind-event-hidden.bs.modal="#showPlaybackSettings = false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form bind-event-submit="#playbackSettings.speed = Math.max(.1, Math.min(10, Number(thisElem.speed.value) || 1)); return #showPlaybackSettings = false;">
+          <div class="modal-header">
+            <strong class="modal-title">Playback Settings</strong>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label>Speed</label>
+            <input type="text" name="speed" class="form-control" bind-statement-1="thisElem.value = #playbackSettings.speed" />
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">
+              <i class="material-icons">check</i> OK</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

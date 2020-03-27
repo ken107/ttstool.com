@@ -38,6 +38,9 @@
   h2 {
     margin: 1rem 0;
   }
+  .material-icons {
+    vertical-align: middle;
+  }
   </style>
 
   <script>
@@ -162,20 +165,20 @@
     }
   </script>
 </head>
-<body>
+<body bind-var-show-playback-settings="false" bind-var-playback-settings="{speed: 1}">
   <div class="container main">
     <h2>Google Wavenet TTS</h2>
     <div bind-statement-1="$(thisElem).toggle(#state == 0)">
       <form bind-event-submit="this.onSubmit0(thisElem.key.value, thisElem.remember.checked); return false;">
         <div class="form-group">
-          <label>API Key:</label>
-          <input class="form-control" type="text" name="key" bind-statement-1="thisElem.value = savedApiKey"/>
+          API Key
+          <input class="form-control" type="text" name="key" bind-statement-1="thisElem.value = savedApiKey" autocomplete="off" />
         </div>
         <div class="form-group">
           <div class="form-check">
             <label class="form-check-label">
               <input type="checkbox" name="remember" class="form-check-input" bind-statement-1="thisElem.checked = !!savedApiKey">
-              Remember me
+              Remember for 7 days
             </label>
           </div>
         </div>
@@ -190,7 +193,7 @@
     <div bind-statement-1="$(thisElem).toggle(#state == 2)">
       <form bind-event-submit="this.onSubmit2(thisElem.lang.value); return false;">
         <div class="form-group">
-          <label>Select Language:</label>
+          Select Language
           <select class="form-control" name="lang">
             <option bind-repeater-i="#languages.length"
               bind-statement-1="thisElem.value = #languages[#i]">{{getLangName(#languages[#i])}}</option>
@@ -220,21 +223,21 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Select Voice:</label>
+          Select Voice
           <select class="form-control" name="voice">
             <option bind-repeater-i="#voices.length"
               bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
           </select>
         </div>
         <div class="form-group" bind-var-char-count="0">
-          <label>Enter Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a>:</label>
+          Enter Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a>
           <textarea class="form-control" name="text" rows="10"
             bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
           <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
           <small class="form-text text-muted">{{#charCount}} chars</small>
         </div>
         <div class="form-group">
-          <label>Output Format:</label>
+          Output Format
           <select class="form-control" name="format">
             <option value="OGG_OPUS">OGG OPUS</option>
             <option value="MP3">MP3</option>
@@ -251,9 +254,12 @@
           <a class="btn btn-secondary"
             bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
             bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
-          <div class="mt-4"
-            bind-statement-1="$(thisElem).toggle(!!#audioUrl)">
-            <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"></audio>
+          <div class="mt-4 align-items-center"
+            bind-statement-1="$(thisElem).css('display', #audioUrl ? 'flex' : 'none')">
+            <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"
+              bind-statement-2="thisElem.defaultPlaybackRate = thisElem.playbackRate = #playbackSettings.speed"></audio>
+            <i class="material-icons" style="cursor: pointer"
+              bind-event-click="#showPlaybackSettings = true">settings</i>
           </div>
         </div>
         <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
@@ -262,5 +268,31 @@
       </form>
     </div>
   </div>
+
+  <div class="playback-settings-dialog modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    bind-statement-2="$(thisElem).modal(#showPlaybackSettings ? 'show' : 'hide')"
+    bind-event-hidden.bs.modal="#showPlaybackSettings = false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form bind-event-submit="#playbackSettings.speed = Math.max(.1, Math.min(10, Number(thisElem.speed.value) || 1)); return #showPlaybackSettings = false;">
+          <div class="modal-header">
+            <strong class="modal-title">Playback Settings</strong>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label>Speed</label>
+            <input type="text" name="speed" class="form-control" bind-statement-1="thisElem.value = #playbackSettings.speed" />
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">
+              <i class="material-icons">check</i> OK</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
