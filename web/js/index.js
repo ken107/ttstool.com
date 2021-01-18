@@ -133,8 +133,16 @@ function prosodyGroupToSSML(pg) {
 function rowToSSML(row) {
   var ssml = "";
   if (row.pause) ssml += "<break time='" + row.pause.value + "s'/>";
-  if (row.text) ssml += row.text;
+  if (row.text) ssml += escapeXml(row.text);
   return ssml;
+}
+
+function escapeXml(text) {
+  return text.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
 }
 
 
