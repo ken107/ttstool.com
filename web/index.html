@@ -35,11 +35,11 @@
   <script src="js/common.js"></script>
   <script src="js/index.js"></script>
 </head>
-<body bind-var-voices="null">
+<body bind-var-voices="null" bind-event-keyup="if (event.ctrlKey && event.key == ' ') { this.playAll(); return false }">
   <div class="page">
     <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
       <div bind-statement-1="$(thisElem).toggle(!#globalProgress)">
-        <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
+        <i class="material-icons button" bind-event-click="this.playAll()" title="Shortcut: Ctrl-Space">play_circle_filled</i>
         <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
       </div>
       <div bind-statement-1="$(thisElem).toggle(!!#globalProgress)">
