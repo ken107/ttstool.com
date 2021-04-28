@@ -1,0 +1,91 @@
+
+<nav data-class="SoundboardNavbar" class="navbar navbar-expand-lg navbar-light bg-light"
+  bind-var-view-root="thisElem">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="https://lsdsoftware.com/">Soundboard</a>
+    <button type="button" class="btn btn-outline-primary"
+      bind-statement-1="$(thisElem).toggle(!!#canAdd)"
+      bind-event-click="$(#viewRoot).triggerHandler('add-item')">＋</button>
+  </div>
+</nav>
+
+
+<div data-class="SoundboardItemList" class="soundboard-item-list"
+  bind-var-view-root="thisElem">
+  <div class="text-muted p-3" bind-repeater-if="!#items.length ? 1 : 0">
+    Soundboard is empty!
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item p-0 d-flex align-items-start" bind-repeater-i="#items.length" bind-var-item="#items[#i]">
+      <div class="ps-3 py-2" style="flex: 1; cursor: pointer;"
+        bind-event-click="$(#viewRoot).triggerHandler('play-item', #item)">
+        <span class="voice label" bind-statement-1="$(thisElem).toggle(#item.voice != null)">voice: {{#item.voice.name}}</span>
+        <span class="volume label" bind-statement-1="$(thisElem).toggle(#item.volume != 1)">volume: {{#item.volume}}</span>
+        <span class="rate label" bind-statement-1="$(thisElem).toggle(#item.rate != 0)">rate: {{Math.pow(5, #item.rate)}}</span>
+        <span class="pitch label" bind-statement-1="$(thisElem).toggle(#item.pitch != 1)">pitch: {{#item.pitch}}</span>
+        <div>{{#item.text}}</div>
+      </div>
+      <div>
+        <div class="ps-2 pe-3 pt-2 pb-1" style="cursor: pointer" data-bs-toggle="dropdown">⋮</div>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#" bind-event-click="alert('Click on the item to play it')">Play</a></li>
+          <li><a class="dropdown-item" href="#" bind-event-click="$(#viewRoot).triggerHandler('edit-item', #item)">Edit</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#" bind-event-click="$(#viewRoot).triggerHandler('delete-item', #item)">Delete</a></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+
+
+<div data-class="SoundboardEditItemDialog" class="modal" tabindex="-1"
+  bind-statement-1="$(thisElem).modal(#visible ? 'show' : 'hide')"
+  bind-event-hidden.bs.modal="#visible = false">
+  <div class="modal-dialog">
+    <form class="modal-content"
+      bind-event-submit="this.onSubmit(thisElem, 'save'); return false">
+      <div class="modal-header">
+        <h5 class="modal-title">{{#item.isNew ? "Add" : "Edit"}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-12">
+            <select class="form-control" name="voice"
+              bind-statement-1="if (#visible) thisElem.value = #item.voice ? voices.indexOf(#item.voice) : ''">
+              <option value="">Select voice</option>
+              <option bind-repeater-i="voices.length"
+                bind-statement-1="thisElem.value = #i">{{voices[#i].name}}</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <textarea class="form-control" name="text" rows="3" placeholder="Enter text to be spoken"
+              bind-statement-1="if (#visible) thisElem.value = #item.text || ''"></textarea>
+          </div>
+          <div class="col-4">
+            <label class="form-label">Volume</label>
+            <input type="range" class="form-range" name="volume" min="0" max="1" step=".05"
+              bind-statement-1="if (#visible) thisElem.value = #item.volume || 1">
+          </div>
+          <div class="col-4">
+            <label class="form-label">Speed</label>
+            <input type="range" class="form-range" name="rate" min="-1" max="1" step=".1"
+              bind-statement-1="if (#visible) thisElem.value = #item.rate">
+          </div>
+          <div class="col-4">
+            <label class="form-label">Pitch</label>
+            <input type="range" class="form-range" name="pitch" min="0" max="2" step=".1"
+              bind-statement-1="if (#visible) thisElem.value = #item.pitch || 1">
+          </div>
+          <div class="col-12 alert alert-danger" bind-repeater-if="#error ? 1 : 0">{{#error.message}}</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" bind-event-click="this.onSubmit(thisElem.form, 'test')">Test</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

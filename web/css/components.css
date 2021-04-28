@@ -1,0 +1,31 @@
+
+.navbar .navbar-brand {
+  color: olivedrab;
+}
+
+
+.soundboard-item-list .label {
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: smaller;
+}
+.soundboard-item-list .label.pause {
+  background-color: #b33b95;
+  color: #f5b5dc;
+}
+.soundboard-item-list .label.volume {
+  background-color: #407f51;
+  color: #aed182;
+}
+.soundboard-item-list .label.rate {
+  background-color: #008eac;
+  color: #a9d1ec;
+}
+.soundboard-item-list .label.voice {
+  background-color: #916460;
+  color: #ffee9c;
+}
+.soundboard-item-list .label.pitch {
+  background-color: #e37000;
+  color: #fbcda8;
+}

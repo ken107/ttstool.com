@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-123643790-2');
+  </script>
+
+  <title>Soundboard - TTS Tool</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly and Microsoft Azure.">
+  <meta property="og:title" content="TTS Tool">
+  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly and Microsoft Azure.">
+
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    i.material-icons {
+      font-size: 1em;
+      vertical-align: text-bottom;
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+  <script src="https://assets.lsdsoftware.com/lib/databind.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    allVoices = null
+    voices = null
+    items = []
+    editMode = false
+
+    loadComponents("components.html")
+    new Promise(fulfill => $(window).on("load", fulfill))
+      .then(() => getVoices(3))
+      .then(result => allVoices = result.filter(x => x.lang))
+      .catch(err => alert(err.message))
+
+
+    function getVoices(retries) {
+      const result = speechSynthesis.getVoices()
+      if (result && result.length) return Promise.resolve(result)
+      else if (retries > 0) return new Promise(fulfill => setTimeout(fulfill, 1000)).then(() => getVoices(retries-1))
+      else return Promise.reject(new Error("Could not get list of available voices"))
+    }
+
+    function getLanguages(voices) {
+      return Array.from(new Set(voices.map(x => x.lang.split("-")[0])))
+    }
+
+
+    editItemDialog = {
+      visible: false,
+      error: null,
+      item: null,
+      show: function(item) {
+        this.item = item
+        this.error = null
+        this.visible = true
+      },
+      onSave: function(data) {
+        if (this.item.isNew) items.push(data)
+        else Object.assign(this.item, data, {audioUrl: null})
+        this.visible = false
+      },
+      onTest: function(data) {
+        playItem(data)
+      }
+    }
+
+    function deleteItem(item) {
+      items.splice(items.indexOf(item), 1)
+    }
+
+    function playItem(item) {
+      const utter = new SpeechSynthesisUtterance(item.text)
+      utter.voice = item.voice
+      utter.volume = item.volume
+      utter.rate = Math.pow(5, item.rate)
+      utter.pitch = item.pitch
+      speechSynthesis.cancel()
+      speechSynthesis.speak(utter)
+    }
+  </script>
+</head>
+<body>
+  <div class="container px-0" bind-repeater-if="#voices ? 0 : 1">
+    <div bind-view="SoundboardNavbar"
+      bind-param-can-add="false"></div>
+    <div class="p-3">
+      <select class="form-control"
+        bind-var-languages="#allVoices && getLanguages(#allVoices)"
+        bind-event-change="voices = allVoices.filter(x => x.lang.startsWith(thisElem.value + '-'))">
+        <option value="">Select Language</option>
+        <option bind-repeater-i="#languages.length"
+          bind-var-lang="#languages[#i]"
+          bind-statement-1="thisElem.value = #lang">{{langMap[#lang] || #lang}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="container px-0" bind-repeater-if="#voices ? 1 : 0">
+    <div bind-view="SoundboardNavbar"
+      bind-param-can-add="true"
+      bind-event-add-item="editItemDialog.show({isNew: true})"></div>
+    <div bind-view="SoundboardItemList"
+      bind-param-items="#items"
+      bind-event-play-item="this.playItem(event.data)"
+      bind-event-edit-item="editItemDialog.show(event.data)"
+      bind-event-delete-item="this.deleteItem(event.data)"></div>
+  </div>
+
+  <div bind-repeater-if="#voices ? 1 : 0"
+    bind-view="SoundboardEditItemDialog"
+    bind-param-visible="#editItemDialog.visible"
+    bind-param-error="#editItemDialog.error"
+    bind-param-item="#editItemDialog.item"
+    bind-event-save-item="editItemDialog.onSave(event.data)"
+    bind-event-test-item="editItemDialog.onTest(event.data)"></div>
+</body>
+</html>
