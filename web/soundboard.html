@@ -62,7 +62,11 @@
     }
 
     function getLanguages(voices) {
-      return Array.from(new Set(voices.map(x => x.lang.split("-")[0])))
+      return Array.from(new Set(voices.map(x => x.lang.split(/[-_]/)[0])))
+    }
+
+    function filterVoicesByLanguage(voices, lang) {
+      return voices.filter(x => x.lang.startsWith(lang + '-') || x.lang.startsWith(lang + '_'))
     }
 
 
@@ -92,6 +96,7 @@
     function playItem(item) {
       const utter = new SpeechSynthesisUtterance(item.text)
       utter.voice = item.voice
+      utter.lang = item.voice.lang
       utter.volume = item.volume
       utter.rate = Math.pow(5, item.rate)
       utter.pitch = item.pitch
@@ -107,7 +112,7 @@
     <div class="p-3">
       <select class="form-control"
         bind-var-languages="#allVoices && getLanguages(#allVoices)"
-        bind-event-change="voices = allVoices.filter(x => x.lang.startsWith(thisElem.value + '-'))">
+        bind-event-change="voices = filterVoicesByLanguage(allVoices, thisElem.value)">
         <option value="">Select Language</option>
         <option bind-repeater-i="#languages.length"
           bind-var-lang="#languages[#i]"
