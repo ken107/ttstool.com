@@ -21,12 +21,12 @@
         bind-event-click="$(#viewRoot).triggerHandler('play-item', #item)">
         <span class="voice label" bind-statement-1="$(thisElem).toggle(#item.voice != null)">voice: {{#item.voice.name}}</span>
         <span class="volume label" bind-statement-1="$(thisElem).toggle(#item.volume != 1)">volume: {{#item.volume}}</span>
-        <span class="rate label" bind-statement-1="$(thisElem).toggle(#item.rate != 0)">rate: {{Math.pow(5, #item.rate)}}</span>
+        <span class="rate label" bind-statement-1="$(thisElem).toggle(#item.rate != 0)">rate: {{Math.pow(5, #item.rate).toFixed(2)}}</span>
         <span class="pitch label" bind-statement-1="$(thisElem).toggle(#item.pitch != 1)">pitch: {{#item.pitch}}</span>
         <div>{{#item.text}}</div>
       </div>
       <div>
-        <div class="ps-2 pe-3 pt-2 pb-1" style="cursor: pointer" data-bs-toggle="dropdown">⋮</div>
+        <div class="ps-2 pe-3 py-2" style="cursor: pointer" data-bs-toggle="dropdown">⋮</div>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="#" bind-event-click="alert('Click on the item to play it')">Play</a></li>
           <li><a class="dropdown-item" href="#" bind-event-click="$(#viewRoot).triggerHandler('edit-item', #item)">Edit</a></li>
@@ -53,7 +53,7 @@
         <div class="row g-2">
           <div class="col-12">
             <select class="form-control" name="voice"
-              bind-statement-1="if (#visible) thisElem.value = #item.voice ? voices.indexOf(#item.voice) : ''">
+              bind-statement-1="if (#visible) thisElem.value = #item.voice ? voices.indexOf(#item.voice) : (voices.length == 1 ? 0 : '')">
               <option value="">Select voice</option>
               <option bind-repeater-i="voices.length"
                 bind-statement-1="thisElem.value = #i">{{voices[#i].name}}</option>
