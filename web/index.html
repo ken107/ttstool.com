@@ -30,7 +30,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://readaloud.app/js/readaloud.min.js"></script>
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
   <script src="js/index.js"></script>
@@ -91,7 +90,8 @@
             <i class="material-icons button" bind-event-click="#editIndex = null">check</i>
           </div>
           <div>
-            <input type="number" size="5" placeholder="Pause" min="0" max="10" bind-event-change="#row.pause = thisElem.value ? {value:thisElem.value} : null"
+            <input type="number" placeholder="Pause" min="0" max="10" style="width: 4em"
+              bind-event-change="#row.pause = thisElem.value ? {value:thisElem.value} : null"
               bind-statement-1="thisElem.value = #row.pause ? #row.pause.value : ''" />
             <select bind-event-change="#row.voice = #voices[thisElem.value]" bind-statement-1="thisElem.value = #row.voice ? #voices.indexOf(#row.voice) : ''">
               <option value="">voice</option>

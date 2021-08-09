@@ -1,5 +1,5 @@
 
-allVoices = getVoices();
+allVoices = [];
 volumes = [
   {value:"default", desc:"default"},
   {value:"silent", desc:"silent"},
@@ -32,18 +32,28 @@ editIndex = 0;
 globalError = null;
 globalProgress = 0;
 
+getVoices()
+  .then(function(voices) {
+    allVoices = voices
+  })
+
 
 function getVoices() {
-  var matcher = /^(Microsoft|Amazon) (.+) \((.+?)\)$/;
-  return readAloudManifest.tts_engine.voices
+  var matcher = /^(\w+) (.+) \((.+?)\)$/;
+  return $ajax({
+    url: serviceHost + "/read-aloud/list-voices/premium",
+    dataType: "json",
+  })
+  .then(function(voices) {
+    return voices
     .filter(function(voice) {
-      return matcher.test(voice.voice_name);
+      return matcher.test(voice.voiceName);
     })
     .map(function(voice) {
-      var match = matcher.exec(voice.voice_name);
+      var match = matcher.exec(voice.voiceName);
       return {
         provider: match[1],
-        id: voice.voice_name,
+        id: voice.voiceName,
         name: match[3],
         desc: match[3] + " (" + match[2] + ")",
         gender: voice.gender,
@@ -51,6 +61,7 @@ function getVoices() {
         langName: match[2]
       }
     })
+  })
 }
 
 function getLanguages(voices) {
