@@ -110,8 +110,12 @@
               <option bind-repeater-i="#pitches.length" bind-statement-1="thisElem.value = #i">{{#pitches[#i].desc}}</option>
             </select>
           </div>
-          <div class="text">
-            <textarea rows="4" placeholder="Enter text to be spoken." bind-event-change="#row.text = thisElem.value" bind-statement-1="thisElem.value = #row.text || ''"></textarea>
+          <div class="text" bind-var-char-count="0">
+            <textarea rows="4" placeholder="Enter text to be spoken."
+              bind-event-change="#row.text = thisElem.value"
+              bind-event-input="#charCount = thisElem.value.length"
+              bind-statement-1="thisElem.value = #row.text || ''"></textarea>
+            <div class="char-count">{{#charCount}} characters</div>
           </div>
         </div>
       </td>

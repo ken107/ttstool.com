@@ -55,6 +55,11 @@ tr.add .viewer {
 }
 .editor textarea {
   width: 100%;
+  resize: vertical;
+}
+.editor .char-count {
+  margin-top: 5px;
+  color: #666;
 }
 .editor .controls {
   float: right;

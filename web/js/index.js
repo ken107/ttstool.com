@@ -80,6 +80,11 @@ function playAll(download) {
     return;
   }
   var ssmlParts = groupByVoice(rows).map(voiceGroupToSSML);
+  var charCount = ssmlParts.reduce(function(sum, part) {return sum + part.ssml.length}, 0);
+  if (charCount > 9000) {
+    alert("Total number of characters (" + charCount + ") cannot exceed 9000")
+    return
+  }
   var promise = download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
   globalProgress++;
   promise
