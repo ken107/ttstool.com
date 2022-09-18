@@ -81,7 +81,7 @@
             <span class="volume label" bind-statement-1="$(thisElem).toggle(#row.volume != null)">volume: {{#row.volume.desc}}</span>
             <span class="rate label" bind-statement-1="$(thisElem).toggle(#row.rate != null)">rate: {{#row.rate.desc}}</span>
             <span class="pitch label" bind-statement-1="$(thisElem).toggle(#row.pitch != null)">pitch: {{#row.pitch.desc}}</span>
-            <span bind-statement-1="$(thisElem).html(#row.text.replace(/\n/g, '<br/>'))"></span>
+            <span bind-statement-1="thisElem.innerHTML = escapeXml(#row.text || '').replace(/\n/g, '&lt;br/&gt;')"></span>
           </div>
           <div style="clear: both;"></div>
         </div>
