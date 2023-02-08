@@ -75,16 +75,15 @@ function getLanguages(voices) {
 
 function playAll(download) {
   if (!rows.length) return;
+  if (rows.some(row => row.text.length > 1000) || rows.reduce((sum, row) => sum + row.text.length, 0) > 3000) {
+    alert("ERROR: each part cannot exceed 1000 characters, and the total number of characters cannot exceed 3000.")
+    return
+  }
   if (!rows[0].voice) {
     alert("Please select a voice for the first speech segment.");
     return;
   }
   var ssmlParts = groupByVoice(rows).map(voiceGroupToSSML);
-  var charCount = ssmlParts.reduce(function(sum, part) {return sum + part.ssml.length}, 0);
-  if (charCount > 9000) {
-    alert("Total number of characters (" + charCount + ") cannot exceed 9000")
-    return
-  }
   var promise = download ? tts.download(ssmlParts) : tts.speak(ssmlParts);
   globalProgress++;
   promise

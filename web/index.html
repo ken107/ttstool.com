@@ -46,6 +46,11 @@
       </div>
     </div>
     <h1>Text-to-Speech Tool</h1>
+    <p style="color: #666; padding-left: 1em; max-width: 60%; margin-bottom: 2em;" bind-repeater-if="#voices ? 0 : 1">
+      <u>Note</u>: this free tool has a 3000 character limit.
+      It is not designed for synthesizing documents or large amounts of text.
+      Please use the Amazon Polly or Google Wavenet tools for that purpose.
+    </p>
     <table bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
       <tr>
         <td>Select voice provider:&nbsp;&nbsp;</td>
