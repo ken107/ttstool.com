@@ -126,9 +126,7 @@
         url: googleServiceUrl + "/text:synthesize?key=" + apiKey,
         contentType: "application/json",
         data: JSON.stringify({
-          input: {
-            ssml: text
-          },
+          input: text.trim().startsWith("<speak") ? {ssml: text} : {text},
           voice: {
             languageCode: language,
             name: voiceName
@@ -217,23 +215,29 @@
       </form>
     </div>
     <div bind-statement-1="$(thisElem).toggle(#state == 1)">
-      <form bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value, thisElem.format.value); return false;">
+      <form bind-var-selected-voice="null"
+        bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value, thisElem.format.value); return false;">
         <div class="form-group"
           bind-var-visible="true"
           bind-statement-1="$(thisElem).toggle(#visible)">
           <div class="alert alert-info">
-            <button type="button" class="close" aria-label="Close" bind-event-click="#visible = false">
+            <button type="button" class="ml-2 close" aria-label="Close" bind-event-click="#visible = false">
               <span aria-hidden="true">&times;</span>
             </button>
-            Each time you click Synthesize, a request is made to Google Cloud Text-to-Speech service,
-            and the corresponding number of characters will be billed.  So <u>only click when you're ready</u>.
-            Currently there's no API to get the total number of characters you have used, so be conservative
-            to avoid overrunning your <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">free tier</a>.
+            Each time you click Synthesize, a request is made to Google Cloud, and the corresponding number of characters is billed.
+            <u>So only click when you're ready</u>. Currently there's no API to get the total number of characters you have used,
+            so be conservative to avoid overrunning your <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">free tier</a>.
+          </div>
+          <div class="alert alert-warning" bind-repeater-if="/-(Studio|News)-/.test(#selectedVoice) ? 1 : 0">
+            You selected a voice that has very high cost per character.
+            Please review the pricing page to make sure you don't incur a large bill.
           </div>
         </div>
         <div class="form-group">
           Select Voice
-          <select class="form-control" name="voice" bind-var-show="['Standard', 'Wavenet', 'Neural2']">
+          <select class="form-control" name="voice"
+            bind-var-show="['Standard', 'Wavenet', 'Neural2', 'Studio', 'News']"
+            bind-event-change="#selectedVoice = thisElem.value">
             <optgroup bind-repeater-g="#show.length"
               bind-var-voices="#voiceGroups.get(#show[#g])"
               bind-statement-1="thisElem.label = #show[#g]">
