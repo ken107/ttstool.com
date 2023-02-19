@@ -50,7 +50,7 @@
     allVoices = null;
     languages = null;
     language = null;
-    voices = null;
+    voiceGroups = null;
     progress = 0;
     error = null;
     audioUrl = null;
@@ -78,10 +78,12 @@
         setCookie("apiKey", apiKey, remember ? 7 : -1);
         allVoices = res.voices
           .map(function(voice) {
+            const tokens = voice.name.split("-")
             return {
+              group: tokens[2],
               name: voice.name,
               lang: voice.languageCodes[0],
-              gender: voice.ssmlGender.charAt(0),
+              gender: voice.ssmlGender,
             }
           })
         languages = Object.keys(allVoices.groupBy(function(voice) {return voice.lang}))
@@ -97,7 +99,14 @@
 
     function onSubmit2(lang) {
       language = lang;
-      voices = allVoices.filter(function(voice) {return voice.lang == lang});
+      voiceGroups = allVoices
+        .filter(function(voice) {return voice.lang == lang})
+        .reduce((acc, voice) => {
+          let group = acc.get(voice.group)
+          if (!group) acc.set(voice.group, group = [])
+          group.push(voice)
+          return acc
+        }, new Map())
       state = 1;
     }
 
@@ -190,11 +199,11 @@
         </div>
       </form>
     </div>
-    <div bind-statement-1="$(thisElem).toggle(#state == 2)">
+    <div bind-repeater-if="#state == 2 ? 1 : 0">
       <form bind-event-submit="this.onSubmit2(thisElem.lang.value); return false;">
         <div class="form-group">
           Select Language
-          <select class="form-control" name="lang">
+          <select class="form-control" name="lang" bind-statement-1="if (#languages) setTimeout(() => thisElem.value = 'en-US', 0)">
             <option bind-repeater-i="#languages.length"
               bind-statement-1="thisElem.value = #languages[#i]">{{getLangName(#languages[#i])}}</option>
           </select>
@@ -224,9 +233,13 @@
         </div>
         <div class="form-group">
           Select Voice
-          <select class="form-control" name="voice">
-            <option bind-repeater-i="#voices.length"
-              bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
+          <select class="form-control" name="voice" bind-var-show="['Standard', 'Wavenet', 'Neural2']">
+            <optgroup bind-repeater-g="#show.length"
+              bind-var-voices="#voiceGroups.get(#show[#g])"
+              bind-statement-1="thisElem.label = #show[#g]">
+              <option bind-repeater-i="#voices.length"
+                bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
+            </optgroup>
           </select>
         </div>
         <div class="form-group" bind-var-char-count="0">
