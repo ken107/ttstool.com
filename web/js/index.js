@@ -75,8 +75,8 @@ function getLanguages(voices) {
 
 function playAll(download) {
   if (!rows.length) return;
-  if (rows.some(row => row.text.length > 1000) || rows.reduce((sum, row) => sum + row.text.length, 0) > 3000) {
-    alert("ERROR: each part cannot exceed 1000 characters, and the total number of characters cannot exceed 3000.")
+  if (rows.some(row => row.text.length > 1000) || rows.reduce((sum, row) => sum + row.text.length, 0) > 10000) {
+    alert("ERROR: each section cannot exceed 1000, and the total cannot exceed 10000 characters.")
     return
   }
   if (!rows[0].voice) {
