@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redirect</title>
+    <script>
+      const query = new URLSearchParams(location.search)
+      switch (query.get("target")) {
+        case "piper-tts-extension":
+          location.href = "https://chromewebstore.google.com/detail/ppnfahcipommelgaapjalhooaeeblmeg"
+          break
+      }
+    </script>
+  </head>
+  <body>
+    You will be automatically redirected
+  </body>
+</html>
