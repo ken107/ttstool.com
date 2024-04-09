@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FastText</title>
+    <script src="../js/message-dispatcher.js"></script>
+
+    <script>
+      const modelPromise = import("./fasttext.js")
+        .then(({FastText}) => new FastText().loadModel("./lid.176.ftz"))
+
+      function* iterateVec(vec) {
+        for (let i=0; i<vec.size(); i++) yield vec.get(i)
+      }
+
+      const dispatcher = makeDispatcher("fasttext-service", {
+        async detectLanguage({text}) {
+          const model = await modelPromise
+          const predictions = model.predict(text, 3)
+          return Array.from(iterateVec(predictions))
+            .map(([probability, label]) => ({
+              probability,
+              language: label.slice(9)
+            }))
+        }
+      })
+
+      addEventListener("message", event => {
+        dispatcher.dispatch(event.data, null, res => event.source.postMessage(res, {targetOrigin: event.origin}))
+      })
+
+      parent.postMessage({
+        to: "fasttext-host",
+        type: "notification",
+        method: "onServiceReady"
+      }, "*")
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
