@@ -150,7 +150,7 @@
         dispatcher.dispatch(event.data, null, res => event.source.postMessage(res, {targetOrigin: event.origin}))
       })
 
-      top.postMessage({
+      parent.postMessage({
         to: "ocr-host",
         type: "notification",
         method: "onServiceReady"
