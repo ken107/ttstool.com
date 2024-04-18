@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ONNX Inference Service</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="message-dispatcher.js"></script>
+    <script>
+      ort.env.wasm.numThreads = navigator.hardwareConcurrency
+
+      class ResultWithTransfer {
+        constructor({result, transfer}) {
+          this.result = result
+          this.transfer = transfer
+        }
+      }
+
+      const sessions = new Map()
+
+      const dispatcher = makeMessageDispatcher({
+        from: "inference-host",
+        to: "inference-service",
+        requestHandlers: {
+          async makeInferenceSession({model}) {
+            const session = await ort.InferenceSession.create(model)
+            const sessionId = String(Math.random())
+            sessions.set(sessionId, session)
+            return sessionId
+          },
+
+          async infer({sessionId, feeds, outputNames}) {
+            const session = sessions.get(sessionId)
+            if (!session) throw new Error("Bad sessionId")
+            for (const name in feeds) {
+              feeds[name] = new ort.Tensor(feeds[name].data, feeds[name].dims)
+            }
+            const outputs = await session.run(feeds)
+            const tensors = outputNames.map(name => outputs[name])
+            return new ResultWithTransfer({
+              result: tensors
+                .map(tensor => ({data: tensor.data, dims: tensor.dims})),
+              transfer: tensors
+                .filter(tensor => ArrayBuffer.isView(tensor.data))
+                .map(tensor => tensor.data.buffer)
+            })
+          },
+
+          async dispose({sessionId}) {
+            const session = sessions.get(sessionId)
+            if (!session) throw new Error("Bad sessionId")
+            await session.dispose()
+          }
+        }
+      })
+
+      window.addEventListener("message", event => {
+        dispatcher.dispatch({
+          message: event.data,
+          sendResponse(res) {
+            if (res.result instanceof ResultWithTransfer) {
+              const {result, transfer} = res.result
+              res.result = result
+              event.source.postMessage(res, {targetOrigin: event.origin, transfer})
+            }
+            else {
+              event.source.postMessage(res, {targetOrigin: event.origin})
+            }
+          }
+        })
+      })
+
+      parent.postMessage({
+        from: "inference-service",
+        to: "inference-host",
+        type: "notification",
+        method: "onReady"
+      }, "*")
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
