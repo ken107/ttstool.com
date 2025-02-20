@@ -1,16 +1,27 @@
 
-allVoices = getVoices();
+allVoices = null;
 voice = null;
 tts = new RemoteTTS(serviceHost);
 validator = new XMLValidator();
 
+getVoices().then(
+  result => allVoices = result,
+  err => alert(String(err))
+)
 
-function getVoices() {
+
+async function getVoices() {
   var matcher = /^(Microsoft|Amazon) (.+) \((.+?)\)$/;
-  return readAloudManifest.tts_engine.voices
-    .filter(function(voice) {
-      return matcher.test(voice.voice_name);
-    })
+  const voices = await $ajax({
+    url: serviceHost + "/read-aloud/list-voices/premium",
+    dataType: "json",
+  })
+  return voices
+    .filter(voice => matcher.test(voice.voiceName))
+    .map(voice => ({
+      voice_name: voice.voiceName,
+      lang: voice.lang,
+    }))
 }
 
 function setPlaceholder(textArea, lang) {
