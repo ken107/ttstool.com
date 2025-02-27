@@ -59,6 +59,7 @@
     lastText = null;
     lastFormat = null;
     totalChars = 0;
+    show = []
 
     function getLangName(lang) {
       if (langMap[lang]) return langMap[lang];
@@ -77,13 +78,24 @@
       .then(function(res) {
         setCookie("apiKey", apiKey, remember ? 7 : -1);
         allVoices = res.voices
-          .map(function(voice) {
+          .flatMap(function(voice) {
             const tokens = voice.name.split("-")
-            return {
-              group: tokens[2],
-              name: voice.name,
-              lang: voice.languageCodes[0],
-              gender: voice.ssmlGender,
+            if (tokens.length == 4) {
+              return {
+                group: tokens[2],
+                name: voice.name,
+                lang: voice.languageCodes[0],
+                gender: voice.ssmlGender,
+              }
+            } else if (tokens.length == 5) {
+              return {
+                group: tokens[2] + '-' + tokens[3],
+                name: voice.name,
+                lang: voice.languageCodes[0],
+                gender: voice.ssmlGender,
+              }
+            } else {
+              return []
             }
           })
         languages = Object.keys(allVoices.groupBy(function(voice) {return voice.lang}))
@@ -107,6 +119,7 @@
           group.push(voice)
           return acc
         }, new Map())
+      show = Array.from(voiceGroups.keys()).sort()
       state = 1;
     }
 
@@ -236,7 +249,6 @@
         <div class="form-group">
           Select Voice
           <select class="form-control" name="voice"
-            bind-var-show="['Standard', 'Wavenet', 'Neural2', 'Studio', 'News']"
             bind-event-change="#selectedVoice = thisElem.value">
             <optgroup bind-repeater-g="#show.length"
               bind-var-voices="#voiceGroups.get(#show[#g])"
