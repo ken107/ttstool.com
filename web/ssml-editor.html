@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
@@ -10,12 +10,12 @@
     gtag('config', 'UA-123643790-2');
   </script>
 
-  <title>TTS Tool</title>
+  <title>TTS Tool - SSML Editor</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly.">
-  <meta property="og:title" content="TTS Tool">
-  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly.">
+  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology with SSML markup for advanced control.">
+  <meta property="og:title" content="TTS Tool - SSML Editor">
+  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology with SSML markup for advanced control.">
 
   <!-- favicon -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -26,47 +26,128 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <link rel="stylesheet" href="css/common.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
   <script src="js/ssml-editor.js"></script>
+  <style>
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-  <div class="page">
-    <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voice != null)">
-      <i class="material-icons button" bind-event-click="this.playAll()">play_circle_filled</i>
-      <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">SSML Tool</a>
+      <div class="dropdown">
+        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="index.html">Home</a></li>
+          <li><a class="dropdown-item active" href="ssml-editor.html">SSML Tool</a></li>
+          <li><a class="dropdown-item" href="soundboard.html">Soundboard Tool</a></li>
+          <li><a class="dropdown-item" href="https://piper.ttstool.com">Piper TTS</a></li>
+          <li><a class="dropdown-item" href="polly.html">Amazon Polly TTS</a></li>
+          <li><a class="dropdown-item" href="wavenet.html">Google Wavenet TTS</a></li>
+          <li><a class="dropdown-item" href="faq.html">FAQ</a></li>
+          <li><a class="dropdown-item" href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a></li>
+        </ul>
+      </div>
     </div>
-    <h1>Text-to-Speech Tool</h1>
-    <table bind-statement-1="$(thisElem).toggle(#voice == null)">
-      <tr>
-        <td>Select voice:&nbsp;&nbsp;</td>
-        <td>
-          <select bind-event-change="#voice = #allVoices[thisElem.value]">
-            <option value=""></option>
-            <option bind-repeater-i="#allVoices.length" bind-statement-1="thisElem.value = #i">{{#allVoices[#i].voice_name}}</option>
-          </select>
-        </td>
-      </tr>
-    </table>
-    <div class="editor" bind-statement-1="$(thisElem).toggle(#voice != null)">
-      <textarea placeholder="Enter SSML here" rows="20"
-        bind-statement-1="if (#voice) setPlaceholder(thisElem, #voice.lang)"></textarea>
-    </div>
-    <div class="error">
-      XML validation failed, please check your XML and try again.
+  </nav>
+
+  <div class="container mt-4 mb-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4" bind-statement-1="$(thisElem).toggle(#voice == null)">
+          <div class="card-body">
+            <div class="row">
+              <label for="voiceSelect" class="col-sm-4 col-md-3 col-form-label">Select voice:</label>
+              <div class="col-sm-8 col-md-9">
+                <select id="voiceSelect" class="form-select" bind-event-change="#voice = #allVoices[thisElem.value]">
+                  <option value=""></option>
+                  <option bind-repeater-i="#allVoices.length" bind-statement-1="thisElem.value = #i">{{#allVoices[#i].voice_name}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" bind-repeater-if="#voice ? 1 : 0">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">SSML Markup</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <textarea id="ssmlTextarea" class="form-control font-monospace"
+                rows="20"
+                placeholder="Enter SSML here"
+                bind-statement-1="if (#voice) setPlaceholder(thisElem, #voice.lang)"></textarea>
+            </div>
+            <div class="alert alert-danger mb-3" style="white-space: pre-line;" bind-repeater-if="#error ? 1 : 0">{{String(#error)}}</div>
+            <div>
+              <button class="btn btn-primary me-2 d-inline-flex" bind-event-click="this.playAll()">
+                <i class="material-icons">play_arrow</i>
+                <span class="ms-1">Play</span>
+              </button>
+              <button class="btn btn-success d-inline-flex" bind-event-click="this.playAll(true)">
+                <i class="material-icons">file_download</i>
+                <span class="ms-1">Download</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-4" bind-repeater-if="#voice ? 1 : 0">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">SSML Quick Reference</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Basic Structure</h6>
+                <pre class="bg-light p-2 rounded"><code>&lt;speak version="1.0" xml:lang="en-US"&gt;
+  Your text here
+&lt;/speak&gt;</code></pre>
+
+                <h6 class="mt-3">Pauses</h6>
+                <pre class="bg-light p-2 rounded"><code>&lt;break time="3s"/&gt;</code></pre>
+                <p class="small text-muted">Add pauses with duration in seconds (s) or milliseconds (ms)</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Emphasis</h6>
+                <pre class="bg-light p-2 rounded"><code>&lt;emphasis level="strong"&gt;emphasized text&lt;/emphasis&gt;</code></pre>
+                <p class="small text-muted">Levels: strong, moderate, reduced</p>
+
+                <h6 class="mt-3">Speech Rate</h6>
+                <pre class="bg-light p-2 rounded"><code>&lt;prosody rate="slow"&gt;slower speech&lt;/prosody&gt;
+&lt;prosody rate="fast"&gt;faster speech&lt;/prosody&gt;
+&lt;prosody rate="150%"&gt;50% faster&lt;/prosody&gt;</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="dangling-footer">
-    <div class="feedback-tab">
-      <a href="index.html">Main editor</a>
-      &nbsp;|&nbsp;
-      <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
-    </div>
-    <div style="clear: both;"></div>
-  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

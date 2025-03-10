@@ -3,6 +3,7 @@ allVoices = null;
 voice = null;
 tts = new RemoteTTS(serviceHost);
 validator = new XMLValidator();
+error = null
 
 getVoices().then(
   result => allVoices = result,
@@ -30,14 +31,15 @@ function setPlaceholder(textArea, lang) {
 
 
 function playAll(isDownload) {
-  var text = $(".editor > textarea").val();
+  var text = $("#ssmlTextarea").val();
+  this.error = null
   try {
     validator.validate(text);
     if (isDownload) tts.download(text, voice.lang, voice.voice_name);
     else tts.speak(text, voice.lang, voice.voice_name);
   }
   catch (err) {
-    $(".error").stop().show().delay(3000).fadeOut();
+    this.error = err
   }
 }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
@@ -26,134 +26,232 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <link rel="stylesheet" href="css/common.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
   <script src="js/index.js"></script>
+  <style>
+    .label {
+      display: inline-block;
+      padding: 0.25em 0.5em;
+      border-radius: 0.25rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    .label.pause {
+      background-color: #b33b95;
+      color: #fff;
+    }
+    .label.volume {
+      background-color: #407f51;
+      color: #fff;
+    }
+    .label.rate {
+      background-color: #008eac;
+      color: #fff;
+    }
+    .label.voice {
+      background-color: #916460;
+      color: #fff;
+    }
+    .label.pitch {
+      background-color: #e37000;
+      color: #fff;
+    }
+    .material-icons.button {
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .char-count {
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+    .material-icons {
+      font-size: 1em;
+    }
+  </style>
 </head>
 <body bind-var-voices="null" bind-event-keyup="if (event.ctrlKey && event.key == ' ') { this.playAll(); return false }">
-  <div class="page">
-    <div class="hyper-controls" bind-statement-1="$(thisElem).toggle(#voices != null)">
-      <div bind-statement-1="$(thisElem).toggle(!#globalProgress)">
-        <i class="material-icons button" bind-event-click="this.playAll()" title="Shortcut: Ctrl-Space">play_circle_filled</i>
-        <i class="material-icons button" bind-event-click="this.playAll(true)">file_download</i>
-      </div>
-      <div bind-statement-1="$(thisElem).toggle(!!#globalProgress)">
-        <div class="spinner"></div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">TTS Tool</a>
+      <div class="dropdown">
+        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item active" href="index.html">Home</a></li>
+          <li><a class="dropdown-item" href="ssml-editor.html">SSML Tool</a></li>
+          <li><a class="dropdown-item" href="soundboard.html">Soundboard Tool</a></li>
+          <li><a class="dropdown-item" href="https://piper.ttstool.com">Piper TTS</a></li>
+          <li><a class="dropdown-item" href="polly.html">Amazon Polly TTS</a></li>
+          <li><a class="dropdown-item" href="wavenet.html">Google Wavenet TTS</a></li>
+          <li><a class="dropdown-item" href="faq.html">FAQ</a></li>
+          <li><a class="dropdown-item" href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a></li>
+        </ul>
       </div>
     </div>
-    <h1>Text-to-Speech Tool</h1>
-    <p style="color: #666; padding-left: 1em; max-width: 60%; margin-bottom: 2em;" bind-repeater-if="#voices ? 0 : 1">
-      <u>Note</u>: this free tool has a 10000 character limit.
-      It is not designed for synthesizing documents or large amounts of text.
-      Please use the Amazon Polly or Google Wavenet tools for that purpose.
-    </p>
-    <table bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
-      <tr>
-        <td>Select voice provider:&nbsp;&nbsp;</td>
-        <td>
-          <select bind-event-change="#provider = thisElem.value">
-            <option value="Amazon">Amazon</option>
-            <option value="Microsoft">Microsoft</option>
-          </select>
-        </td>
-      </tr>
-      <tr bind-var-languages="this.getLanguages(#allVoices.filter(function(x) {return x.provider == #provider}))">
-        <td>Select language:</td>
-        <td>
-          <select bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.provider == #provider && voice.langName.slice(-thisElem.value.length) == thisElem.value})">
-            <option value=""></option>
-            <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i]">{{#languages[#i]}}</option>
-          </select>
-        </td>
-      </tr>
-    </table>
-  <table class="rows" bind-statement-1="$(thisElem).toggle(#voices != null)">
-    <tr bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
-      <td>
-        <div class="viewer" bind-statement-1="$(thisElem).toggle(#i != #editIndex)">
-          <div class="controls">
-            <i class="material-icons button" bind-event-click="#editIndex = #i">create</i>
-            <i class="material-icons button" bind-event-click="#rows.splice(#i,0,{}); #editIndex=#i;">add</i>
-            <i class="material-icons button" bind-event-click="#rows.splice(#i,1); if (#editIndex>#i) #editIndex--;">clear</i>
-          </div>
-          <div>
-            <span class="pause label" bind-statement-1="$(thisElem).toggle(#row.pause != null)">pause: {{#row.pause.value}}s</span>
-            <span class="voice label" bind-statement-1="$(thisElem).toggle(#row.voice != null)">voice: {{#row.voice.name}}</span>
-            <span class="volume label" bind-statement-1="$(thisElem).toggle(#row.volume != null)">volume: {{#row.volume.desc}}</span>
-            <span class="rate label" bind-statement-1="$(thisElem).toggle(#row.rate != null)">rate: {{#row.rate.desc}}</span>
-            <span class="pitch label" bind-statement-1="$(thisElem).toggle(#row.pitch != null)">pitch: {{#row.pitch.desc}}</span>
-            <span bind-statement-1="thisElem.innerHTML = escapeXml(#row.text || '').replace(/\n/g, '&lt;br/&gt;')"></span>
-          </div>
-          <div style="clear: both;"></div>
-        </div>
-        <div class="editor" bind-statement-1="$(thisElem).toggle(#i == #editIndex)">
-          <div class="controls">
-            <i class="material-icons button" bind-event-click="#editIndex = null">check</i>
-          </div>
-          <div>
-            <input type="number" placeholder="Pause" min="0" max="10" style="width: 4em"
-              bind-event-change="#row.pause = thisElem.value ? {value:thisElem.value} : null"
-              bind-statement-1="thisElem.value = #row.pause ? #row.pause.value : ''" />
-            <select bind-event-change="#row.voice = #voices[thisElem.value]" bind-statement-1="thisElem.value = #row.voice ? #voices.indexOf(#row.voice) : ''">
-              <option value="">voice</option>
-              <option bind-repeater-i="#voices.length" bind-statement-1="thisElem.value = #i">{{#voices[#i].desc}}</option>
-            </select>
-            <select bind-event-change="#row.volume = #volumes[thisElem.value]" bind-statement-1="thisElem.value = #row.volume ? #volumes.indexOf(#row.volume) : ''">
-              <option value="">volume</option>
-              <option bind-repeater-i="#volumes.length" bind-statement-1="thisElem.value = #i">{{#volumes[#i].desc}}</option>
-            </select>
-            <select bind-event-change="#row.rate = #rates[thisElem.value]" bind-statement-1="thisElem.value = #row.rate ? #rates.indexOf(#row.rate) : ''">
-              <option value="">rate</option>
-              <option bind-repeater-i="#rates.length" bind-statement-1="thisElem.value = #i">{{#rates[#i].desc}}</option>
-            </select>
-            <select bind-event-change="#row.pitch = #pitches[thisElem.value]" bind-statement-1="thisElem.value = #row.pitch ? #pitches.indexOf(#row.pitch) : ''">
-              <option value="">pitch</option>
-              <option bind-repeater-i="#pitches.length" bind-statement-1="thisElem.value = #i">{{#pitches[#i].desc}}</option>
-            </select>
-          </div>
-          <div class="text" bind-var-char-count="0">
-            <textarea rows="4" placeholder="Enter text to be spoken."
-              bind-event-change="#row.text = thisElem.value"
-              bind-event-input="#charCount = thisElem.value.length"
-              bind-statement-1="thisElem.value = #row.text || ''"></textarea>
-            <div class="char-count">{{#charCount}} characters</div>
+  </nav>
+
+  <div class="container mt-2 mb-5">
+    <div class="row">
+      <div class="col-12">
+        <div class="mb-2 d-flex justify-content-end align-items-center">
+          <div bind-statement-1="$(thisElem).toggle(#voices != null)">
+            <div bind-statement-1="$(thisElem).toggle(!#globalProgress)">
+              <i class="material-icons button fs-1" bind-event-click="this.playAll()" title="Shortcut: Ctrl-Space">play_circle_filled</i>
+              <i class="material-icons button fs-1" bind-event-click="this.playAll(true)">file_download</i>
+            </div>
+            <div bind-statement-1="$(thisElem).toggle(!!#globalProgress)">
+              <div class="spinner"></div>
+            </div>
           </div>
         </div>
-      </td>
-    </tr>
-    <tr class="add" bind-statement-1="$(thisElem).toggle(#editIndex == null)">
-      <td>
-        <div class="viewer">
-          <div class="controls">
-            <i class="material-icons button" bind-event-click="#rows.push({}); #editIndex=#rows.length-1;">add</i>
+
+        <div class="alert alert-info" bind-repeater-if="#voices ? 0 : 1">
+          <strong>Note:</strong> This free tool has a 10000 character limit.
+          It is not designed for synthesizing documents or large amounts of text.
+          Please use the Amazon Polly or Google Wavenet tools for that purpose.
+        </div>
+
+        <div class="card text-dark bg-light mb-4" bind-var-provider="'Amazon'" bind-statement-1="$(thisElem).toggle(#voices == null)">
+          <div class="card-body">
+            <form>
+              <div class="mb-3 row">
+                <label for="provider" class="col-sm-4 col-md-3 col-form-label">Select voice provider:</label>
+                <div class="col-sm-8 col-md-9">
+                  <select id="provider" class="form-select" bind-event-change="#provider = thisElem.value">
+                    <option value="Amazon">Amazon</option>
+                    <option value="Microsoft">Microsoft</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row" bind-var-languages="this.getLanguages(#allVoices.filter(function(x) {return x.provider == #provider}))">
+                <label for="language" class="col-sm-4 col-md-3 col-form-label">Select language:</label>
+                <div class="col-sm-8 col-md-9">
+                  <select id="language" class="form-select" bind-event-change="#voices = #allVoices.filter(function(voice) {return voice.provider == #provider && voice.langName.slice(-thisElem.value.length) == thisElem.value})">
+                    <option value=""></option>
+                    <option bind-repeater-i="#languages.length" bind-statement-1="thisElem.value = #languages[#i]">{{#languages[#i]}}</option>
+                  </select>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </td>
-    </tr>
-  </table>
-  </div>
-  <div class="dangling-footer">
-    <div class="feedback-tab">
-      <a href="ssml-editor.html">SSML tool</a>
-      &nbsp;|&nbsp;
-      <a href="soundboard.html">Soundboard Tool</a>
-      &nbsp;|&nbsp;
-      <a href="https://piper.ttstool.com">Piper TTS</a>
-      &nbsp;|&nbsp;
-      <a href="polly.html">Amazon Polly TTS</a>
-      &nbsp;|&nbsp;
-      <a href="wavenet.html">Google Wavenet TTS</a>
-      &nbsp;|&nbsp;
-      <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+
+        <div bind-statement-1="$(thisElem).toggle(#voices != null)">
+          <div class="card text-dark bg-light mb-3" bind-repeater-i="#rows.length" bind-var-row="#rows[#i]">
+            <div class="card-body p-3">
+              <div bind-statement-1="$(thisElem).toggle(#i != #editIndex)">
+                <div class="ps-2 float-end btn-group" role="group">
+                  <button type="button" class="btn btn-light btn-sm" bind-event-click="#editIndex = #i">
+                    <i class="material-icons button">create</i></button>
+                  <button type="button" class="btn btn-light btn-sm" bind-event-click="#rows.splice(#i,0,{}); #editIndex=#i;">
+                    <i class="material-icons button">add</i></button>
+                  <button type="button" class="btn btn-light btn-sm" bind-event-click="#rows.splice(#i,1); if (#editIndex>#i) #editIndex--;">
+                    <i class="material-icons button">clear</i></button>
+                </div>
+                <div>
+                  <span class="label pause" bind-statement-1="$(thisElem).toggle(#row.pause != null)">pause: {{#row.pause.value}}s</span>
+                  <span class="label voice" bind-statement-1="$(thisElem).toggle(#row.voice != null)">voice: {{#row.voice.name}}</span>
+                  <span class="label volume" bind-statement-1="$(thisElem).toggle(#row.volume != null)">volume: {{#row.volume.desc}}</span>
+                  <span class="label rate" bind-statement-1="$(thisElem).toggle(#row.rate != null)">rate: {{#row.rate.desc}}</span>
+                  <span class="label pitch" bind-statement-1="$(thisElem).toggle(#row.pitch != null)">pitch: {{#row.pitch.desc}}</span>
+                </div>
+                <div bind-statement-1="thisElem.innerHTML = escapeXml(#row.text || '').replace(/\n/g, '&lt;br/&gt;')"></div>
+              </div>
+
+              <div bind-statement-1="$(thisElem).toggle(#i == #editIndex)">
+                <div class="row">
+                  <div class="col-6 col-sm-4 col-md-2 mb-3">
+                    <input type="number" class="form-control" placeholder="Pause" min="0" max="10"
+                      bind-event-change="#row.pause = thisElem.value ? {value:thisElem.value} : null"
+                      bind-statement-1="thisElem.value = #row.pause ? #row.pause.value : ''" />
+                  </div>
+                  <div class="col-6 col-sm-8 col-md-4 mb-3 ps-0">
+                    <select class="form-select" bind-event-change="#row.voice = #voices[thisElem.value]" bind-statement-1="thisElem.value = #row.voice ? #voices.indexOf(#row.voice) : ''">
+                      <option value="">Voice</option>
+                      <option bind-repeater-i="#voices.length" bind-statement-1="thisElem.value = #i">{{#voices[#i].desc}}</option>
+                    </select>
+                  </div>
+                  <div class="col-4 col-md-2 mb-3 ps-md-0">
+                    <select class="form-select" bind-event-change="#row.volume = #volumes[thisElem.value]" bind-statement-1="thisElem.value = #row.volume ? #volumes.indexOf(#row.volume) : ''">
+                      <option value="">Volume</option>
+                      <option bind-repeater-i="#volumes.length" bind-statement-1="thisElem.value = #i">{{#volumes[#i].desc}}</option>
+                    </select>
+                  </div>
+                  <div class="col-4 col-md-2 mb-3 ps-0">
+                    <select class="form-select" bind-event-change="#row.rate = #rates[thisElem.value]" bind-statement-1="thisElem.value = #row.rate ? #rates.indexOf(#row.rate) : ''">
+                      <option value="">Rate</option>
+                      <option bind-repeater-i="#rates.length" bind-statement-1="thisElem.value = #i">{{#rates[#i].desc}}</option>
+                    </select>
+                  </div>
+                  <div class="col-4 col-md-2 mb-3 ps-0">
+                    <select class="form-select" bind-event-change="#row.pitch = #pitches[thisElem.value]" bind-statement-1="thisElem.value = #row.pitch ? #pitches.indexOf(#row.pitch) : ''">
+                      <option value="">Pitch</option>
+                      <option bind-repeater-i="#pitches.length" bind-statement-1="thisElem.value = #i">{{#pitches[#i].desc}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <textarea class="form-control" rows="4" placeholder="Enter text to be spoken."
+                      bind-event-change="#row.text = thisElem.value"
+                      bind-event-input="this.updateCharCount()"
+                      bind-statement-1="thisElem.value = #row.text || ''"></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button type="button" class="btn btn-outline-primary"
+                      bind-event-click="#editIndex = null"><i class="material-icons">check</i> Done</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3" bind-statement-1="$(thisElem).toggle(#editIndex == null)">
+            <div class="card-body p-3 text-center">
+              <button type="button" class="btn btn-light" bind-event-click="#rows.push({}); #editIndex=#rows.length-1;">
+                <i class="material-icons button">add</i></button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="clear: both;"></div>
   </div>
-  <div class="alert alert-danger global-error-alert"
-    bind-statement-1="if (#globalError) $(thisElem).stop().show(0).delay(5000).hide(0); else $(thisElem).stop().hide(0)"
-    bind-event-click="$(thisElem).stop().hide(0)">Error: {{#globalError.message}}</div>
+
+  <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 5">
+    <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true"
+      bind-statement-1="if (#globalError) $(thisElem).toast('show'); else $(thisElem).toast('hide')"
+      bind-event-click="$(thisElem).toast('hide')">
+      <div class="d-flex">
+        <div class="toast-body">
+          Error: {{#globalError.message}}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
