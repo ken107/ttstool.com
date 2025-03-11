@@ -27,11 +27,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.bundle.min.js" integrity="sha384-zDnhMsjVZfS3hiP7oCBRmfjkQC4fzxVxFhBx8Hkz2aZX8gEvA/jsP3eXRCvzTofP" crossorigin="anonymous"></script>
-  <script src="https://assets.lsdsoftware.com/lib/databind.js"></script>
+  <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
 
   <style>
@@ -186,43 +185,62 @@
   </script>
 </head>
 <body bind-var-show-playback-settings="false" bind-var-playback-settings="{speed: 1}">
-  <div class="container main">
-    <h2>Google Wavenet TTS</h2>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Google Wavenet TTS</a>
+      <div class="dropdown">
+        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="index.html">Home</a></li>
+          <li><a class="dropdown-item" href="ssml-editor.html">SSML Tool</a></li>
+          <li><a class="dropdown-item" href="soundboard.html">Soundboard Tool</a></li>
+          <li><a class="dropdown-item" href="https://piper.ttstool.com">Piper TTS</a></li>
+          <li><a class="dropdown-item" href="polly.html">Amazon Polly TTS</a></li>
+          <li><a class="dropdown-item active" href="wavenet.html">Google Wavenet TTS</a></li>
+          <li><a class="dropdown-item" href="faq.html">FAQ</a></li>
+          <li><a class="dropdown-item" href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container main mt-4 mb-5">
     <div bind-statement-1="$(thisElem).toggle(#state == 0)">
       <form bind-event-submit="this.onSubmit0(thisElem.key.value, thisElem.remember.checked); return false;">
-        <div class="form-group">
+        <div class="mb-3">
           API Key
-          <input class="form-control" type="text" name="key" bind-statement-1="thisElem.value = savedApiKey" autocomplete="off" />
+          <input class="form-control" type="password" name="key"
+            bind-statement-1="thisElem.value = savedApiKey">
         </div>
-        <div class="form-group">
-          <div class="form-check">
-            <label class="form-check-label">
-              <input type="checkbox" name="remember" class="form-check-input" bind-statement-1="thisElem.checked = !!savedApiKey">
-              Remember for 7 days
-            </label>
-          </div>
+        <div class="mb-3 form-check">
+          <input class="form-check-input" type="checkbox" name="remember" id="cboRememberMe"
+            bind-statement-1="thisElem.checked = !!savedApiKey">
+          <label class="form-check-label" for="cboRememberMe">Remember for 7 days</label>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
           <div class="alert alert-danger">{{#error.message}}</div>
         </div>
       </form>
     </div>
     <div bind-repeater-if="#state == 2 ? 1 : 0">
       <form bind-event-submit="this.onSubmit2(thisElem.lang.value); return false;">
-        <div class="form-group">
+        <div class="mb-3">
           Select Language
           <select class="form-control" name="lang" bind-statement-1="if (#languages) setTimeout(() => thisElem.value = 'en-US', 0)">
             <option bind-repeater-i="#languages.length"
               bind-statement-1="thisElem.value = #languages[#i]">{{getLangName(#languages[#i])}}</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
-        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
           <div class="alert alert-danger">{{#error.message}}</div>
         </div>
       </form>
@@ -230,23 +248,20 @@
     <div bind-statement-1="$(thisElem).toggle(#state == 1)">
       <form bind-var-selected-voice="null"
         bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value, thisElem.format.value); return false;">
-        <div class="form-group"
-          bind-var-visible="true"
-          bind-statement-1="$(thisElem).toggle(#visible)">
+        <div class="mb-3">
           <div class="alert alert-info">
-            <button type="button" class="ml-2 close" aria-label="Close" bind-event-click="#visible = false">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close float-end" aria-label="Close"
+              bind-event-click="$(thisElem).parent().hide()"></button>
             Each time you click Synthesize, a request is made to Google Cloud, and the corresponding number of characters is billed.
             <u>So only click when you're ready</u>. Currently there's no API to get the total number of characters you have used,
             so be conservative to avoid overrunning your <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">free tier</a>.
           </div>
-          <div class="alert alert-warning" bind-repeater-if="/-(Studio|News)-/.test(#selectedVoice) ? 1 : 0">
+          <div class="alert alert-warning" bind-repeater-if="/-(Studio)-/.test(#selectedVoice) ? 1 : 0">
             You selected a voice that has very high cost per character.
-            Please review the pricing page to make sure you don't incur a large bill.
+            Please review the <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">pricing</a> page to make sure you don't incur a large bill.
           </div>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           Select Voice
           <select class="form-control" name="voice"
             bind-event-change="#selectedVoice = thisElem.value">
@@ -258,14 +273,14 @@
             </optgroup>
           </select>
         </div>
-        <div class="form-group" bind-var-char-count="0">
+        <div class="mb-3" bind-var-char-count="0">
           Enter Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a>
           <textarea class="form-control" name="text" rows="10"
             bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
           <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
           <small class="form-text text-muted">{{#charCount}} chars</small>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           Output Format
           <select class="form-control" name="format">
             <option value="OGG_OPUS">OGG OPUS</option>
@@ -273,10 +288,9 @@
             <option value="LINEAR16">WAV</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           <button type="submit" class="btn btn-primary" bind-statement-1="thisElem.disabled = #progress > 0">
             <div class="spinner-border spinner-border-sm" role="status" bind-statement-1="$(thisElem).toggle(#progress > 0)">
-              <span class="sr-only">Loading...</span>
             </div>
             Synthesize
           </button>
@@ -287,11 +301,11 @@
             bind-statement-1="$(thisElem).css('display', #audioUrl ? 'flex' : 'none')">
             <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"
               bind-statement-2="thisElem.defaultPlaybackRate = thisElem.playbackRate = #playbackSettings.speed"></audio>
-            <i class="material-icons" style="cursor: pointer"
+            <i class="material-icons ms-1" style="cursor: pointer"
               bind-event-click="#showPlaybackSettings = true">settings</i>
           </div>
         </div>
-        <div class="form-group" bind-statement-1="$(thisElem).toggle(!!#error)">
+        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
           <div class="alert alert-danger">{{#error.message}}</div>
         </div>
       </form>
@@ -306,9 +320,7 @@
         <form bind-event-submit="#playbackSettings.speed = Math.max(.1, Math.min(10, Number(thisElem.speed.value) || 1)); return #showPlaybackSettings = false;">
           <div class="modal-header">
             <strong class="modal-title">Playback Settings</strong>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <label>Speed</label>
@@ -323,5 +335,7 @@
     </div>
   </div>
 
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
