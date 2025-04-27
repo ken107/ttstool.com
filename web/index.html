@@ -212,14 +212,15 @@
                     </select>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row" bind-var-char-count="0">
                   <div class="col-12 mb-3">
                     <textarea class="form-control" rows="4" placeholder="Enter text to be spoken."
                       bind-event-change="#row.text = thisElem.value"
-                      bind-event-input="this.updateCharCount()"
+                      bind-event-input="#charCount = thisElem.value.length"
                       bind-statement-1="thisElem.value = #row.text || ''"></textarea>
                   </div>
-                  <div class="col-12">
+                  <div class="col-12 d-flex justify-content-between align-items-start">
+                    <div class="char-count">{{#charCount}} characters</div>
                     <button type="button" class="btn btn-outline-primary"
                       bind-event-click="#editIndex = null"><i class="material-icons">check</i> Done</button>
                   </div>

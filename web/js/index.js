@@ -72,10 +72,6 @@ function getLanguages(voices) {
   return Object.keys(groups).sort();
 }
 
-function updateCharCount() {
-  //TODO
-}
-
 
 function playAll(download) {
   if (!rows.length) return;
