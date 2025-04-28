@@ -10,6 +10,8 @@ getVoices().then(
   err => alert(String(err))
 )
 
+loadComponents("components.html")
+
 
 async function getVoices() {
   var matcher = /^(Microsoft|Amazon) (.+) \((.+?)\)$/;

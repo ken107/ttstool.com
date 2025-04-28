@@ -365,3 +365,15 @@ function loadComponents(url) {
         })
     })
 }
+
+function toggleClass(el, isOn, onClass, offClass) {
+  if (onClass) el.classList.toggle(onClass, isOn)
+  if (offClass) el.classList.toggle(offClass, !isOn)
+}
+
+
+darkMode = localStorage.getItem('darkMode') === 'true';
+
+function toggleDarkMode() {
+  localStorage.setItem('darkMode', darkMode = !darkMode);
+}

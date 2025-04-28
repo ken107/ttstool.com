@@ -1,0 +1,14 @@
+
+/* Dark mode styles */
+[data-bs-theme=dark] {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+[data-bs-theme=dark] input,
+[data-bs-theme=dark] select,
+[data-bs-theme=dark] textarea {
+  color: #e0e0e0 !important;
+}
+[data-bs-theme=dark] ::placeholder {
+  color: #999 !important;
+}

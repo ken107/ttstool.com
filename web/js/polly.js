@@ -20,6 +20,8 @@ audioUrl = null;
 filename = null;
 totalChars = 0;
 
+loadComponents("components.html")
+
 
 function onSubmit0($accessKeyId, $secretAccessKey, $rememberMe) {
   if (rememberMe && !$rememberMe) {

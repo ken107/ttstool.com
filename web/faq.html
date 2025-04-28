@@ -27,11 +27,16 @@
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/components.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/components.js"></script>
+
   <style>
-    :root {
+    body {
       --primary-color: #4361ee;
       --secondary-color: #3a0ca3;
       --background-color: #f8f9fa;
@@ -41,6 +46,16 @@
       --border-radius: 8px;
       --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
+    }
+
+    body[data-bs-theme=dark] {
+      --primary-color: #7da6ff;
+      --secondary-color: #a3bffa;
+      --background-color: #181a1b;
+      --card-background: #23272a;
+      --text-color: #f1f3f4;
+      --text-secondary: #b0b3b8;
+      --box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     }
 
     * {
@@ -57,7 +72,7 @@
       background-color: var(--background-color);
     }
 
-    .container {
+    .main-container {
       max-width: 1000px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
@@ -135,28 +150,6 @@
       padding: 0 1.5rem 1.5rem;
     }
 
-    .footer {
-      margin-top: 3rem;
-      border-radius: var(--border-radius);
-      background-color: var(--primary-color);
-      padding: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .footer a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .footer a:hover {
-      opacity: 0.8;
-    }
-
     @media (max-width: 768px) {
       h1 {
         font-size: 2rem;
@@ -169,8 +162,14 @@
     }
   </style>
 </head>
-<body>
-  <div class="container">
+<body bind-statement-1="thisElem.setAttribute('data-bs-theme', #darkMode ? 'dark' : 'light')">
+
+  <div bind-view="Navbar"
+    bind-param-dark-mode="#darkMode"
+    bind-param-active-page="'FAQ'"
+    bind-event-toggle-dark-mode="this.toggleDarkMode()"></div>
+
+  <div class="main-container">
     <header>
       <h1>Frequently Asked Questions</h1>
       <p class="header-subtitle">Find answers to common questions about TTS Tool and text-to-speech technology</p>
@@ -275,20 +274,13 @@
       </div>
     </div>
   </div>
-  
-  <div class="container">
-    <div class="footer">
-      <a href="index.html">Home</a>
-      <a href="ssml-editor.html">SSML Tool</a>
-      <a href="soundboard.html">Soundboard Tool</a>
-      <a href="https://piper.ttstool.com">Piper TTS</a>
-      <a href="polly.html">Amazon Polly TTS</a>
-      <a href="wavenet.html">Google Wavenet TTS</a>
-      <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
-    </div>
-  </div>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
+    loadComponents("components.html")
+
     // Add toggle functionality for FAQ items
     document.addEventListener('DOMContentLoaded', function() {
       const faqItems = document.querySelectorAll('.faq-item');

@@ -37,6 +37,8 @@ getVoices()
     allVoices = voices
   })
 
+loadComponents("components.html")
+
 
 function getVoices() {
   var matcher = /^(\w+) (.+) \((.+?)\)$/;

@@ -1,20 +1,6 @@
 
-<nav data-class="SoundboardNavbar" class="navbar navbar-expand-lg navbar-light bg-light"
-  bind-var-view-root="thisElem">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="https://lsdsoftware.com/">Soundboard</a>
-    <button type="button" class="btn btn-outline-primary"
-      bind-statement-1="$(thisElem).toggle(!!#canAdd)"
-      bind-event-click="$(#viewRoot).triggerHandler('add-item')">＋</button>
-  </div>
-</nav>
-
-
 <div data-class="SoundboardItemList" class="soundboard-item-list"
   bind-var-view-root="thisElem">
-  <div class="text-muted p-3" bind-repeater-if="!#items.length ? 1 : 0">
-    Soundboard is empty!
-  </div>
   <ul class="list-group">
     <li class="list-group-item p-0 d-flex align-items-start" bind-repeater-i="#items.length" bind-var-item="#items[#i]">
       <div class="ps-3 py-2" style="flex: 1; cursor: pointer;"
@@ -35,6 +21,13 @@
         </ul>
       </div>
     </li>
+    <li class="list-group-item d-flex justify-content-center">
+      <button type="button" class="btn"
+        bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-outline-primary')"
+        bind-event-click="$(#viewRoot).triggerHandler('add-item')">
+        <i class="material-icons">add</i>
+      </button>
+    </li>
   </ul>
 </div>
 
@@ -52,7 +45,7 @@
       <div class="modal-body">
         <div class="row g-2">
           <div class="col-12">
-            <select class="form-control" name="voice"
+            <select class="form-select" name="voice"
               bind-statement-1="if (#visible) thisElem.value = #item.voice ? voices.indexOf(#item.voice) : (voices.length == 1 ? 0 : '')">
               <option value="">Select voice</option>
               <option bind-repeater-i="voices.length"
@@ -89,3 +82,33 @@
     </form>
   </div>
 </div>
+
+
+<nav data-class="Navbar" class="navbar navbar-dark"
+  bind-var-view-root="thisElem"
+  bind-statement-1="toggleClass(thisElem, #darkMode, 'bg-dark', 'bg-primary')">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">{{#brandText}}</a>
+    <div class="dropdown">
+      <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"
+        bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-primary')">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton"
+        bind-statement-1="$(thisElem).find('[data-page=' + #activePage + ']').toggleClass('active', true)">
+        <li><a class="dropdown-item" href="index.html" data-page="HOME">Home</a></li>
+        <li><a class="dropdown-item" href="ssml-editor.html" data-page="SSML">SSML Tool</a></li>
+        <li><a class="dropdown-item" href="soundboard.html" data-page="SOUNDBOARD">Soundboard Tool</a></li>
+        <li><a class="dropdown-item" href="https://piper.ttstool.com">Piper TTS</a></li>
+        <li><a class="dropdown-item" href="polly.html" data-page="POLLY">Amazon Polly TTS</a></li>
+        <li><a class="dropdown-item" href="wavenet.html" data-page="WAVENET">Google Wavenet TTS</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="faq.html" data-page="FAQ">FAQ</a></li>
+        <li><a class="dropdown-item" href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item"
+          bind-event-click="$(#viewRoot).triggerHandler('toggle-dark-mode')">Toggle dark mode</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
