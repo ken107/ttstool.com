@@ -89,6 +89,7 @@ function loadLanguageList() {
       if (dedupe[language.code]) return false;
       return dedupe[language.code] = true;
     })
+    .sort((a, b) => a.code.localeCompare(b.code))
 }
 
 function filterVoiceList() {
