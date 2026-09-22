@@ -142,6 +142,25 @@
     </div>
   </div>
 
+  <article class="container tool-guide mb-5" aria-labelledby="guide-title">
+    <h1 id="guide-title">Shape your narration with SSML</h1>
+    <p>Speech Synthesis Markup Language (SSML) adds instructions around your text to control its spoken delivery. This editor is useful when a pause belongs inside a sentence or a particular phrase needs a different pace. For controls without markup, use the <a href="index.html">main TTS Tool</a>.</p>
+    <h2>Start with a short example</h2>
+    <p>Choose a voice to open the editor. It inserts a <code>speak</code> wrapper with that voice's language. Keep the wrapper and place your text inside it. For an English (United States) voice, try:</p>
+    <pre class="border rounded p-3"><code>&lt;speak version="1.0" xml:lang="en-US"&gt;
+  Welcome to the workshop.
+  &lt;break time="750ms"/&gt;
+  &lt;prosody rate="slow"&gt;Take your time with this step.&lt;/prosody&gt;
+&lt;/speak&gt;</code></pre>
+    <p>The break requests three-quarters of a second of silence. The prosody tag asks the voice to read only the enclosed sentence more slowly. Keep the language generated for your chosen voice when adapting this example to another language.</p>
+    <h2>Preview and save the result</h2>
+    <p>Click Play to listen, then change one instruction at a time. Download opens the generated audio in a new tab; depending on your browser, use the audio player's menu to save it. If no tab opens, check whether your browser blocked the popup. Copy your markup into a local text file before leaving or reloading the page; this editor does not save it automatically.</p>
+    <h2>Fix markup and voice errors</h2>
+    <p>Every opening tag needs a matching closing tag, except self-closing tags such as <code>&lt;break time="750ms"/&gt;</code>. Use straight quotation marks around attributes. Write an ampersand as <code>&amp;amp;</code> in XML text. Keep all content inside one <code>speak</code> element.</p>
+    <p>The editor checks XML syntax before sending the request, but valid XML does not mean every speech instruction is supported. Amazon and Microsoft voices can support different SSML features. If an example fails, start with plain text inside the wrapper and add tags back one at a time. See the <a href="https://docs.aws.amazon.com/polly/latest/dg/supportedtags.html">Amazon Polly supported tags</a> or <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup">Microsoft speech markup documentation</a> for provider-specific details.</p>
+    <p>This tool uses hosted speech processing. See our <a href="privacy.html">privacy policy</a> and <a href="faq.html">FAQ</a> before submitting sensitive text.</p>
+  </article>
+
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

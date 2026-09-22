@@ -282,6 +282,32 @@
     }
   </script>
 
+  <article class="container tool-guide mb-5" aria-labelledby="guide-title">
+    <h1 id="guide-title">Create a voice narration with TTS Tool</h1>
+    <p>Turn a short script into spoken audio, listen to the result, and download an MP3. The free tool offers Amazon, Microsoft, and RHVoice options, with languages and voices depending on the provider you select. Use it to try a video introduction, hear a passage aloud, or prepare narration for a presentation. You can split a script into sections and adjust how each part sounds.</p>
+
+    <h2>From text to audio</h2>
+    <ol>
+      <li><strong>Choose a provider and language.</strong> Select a language to open the text editor, then choose a voice for your first section.</li>
+      <li><strong>Enter a short passage.</strong> Start with a sentence or two so you can compare the voice and pacing before preparing a longer script.</li>
+      <li><strong>Adjust the delivery.</strong> Volume, Rate, and Pitch change the selected section's delivery where supported by the voice. Pause adds silence before that section, in seconds.</li>
+      <li><strong>Finish the section.</strong> Click Done, then use the plus button to add another section. The pencil lets you edit an existing section. Later sections can inherit the previous voice and delivery settings; select a setting explicitly when you want it to change.</li>
+      <li><strong>Listen, then download.</strong> The play icon at the top reads the sections in order. You can also use Ctrl+Space. The download icon generates an MP3 named narration.mp3.</li>
+    </ol>
+
+    <h2>Try a two-part introduction</h2>
+    <p>In the first section, choose a voice and enter: <em>“Welcome to our garden. Let's take a closer look.”</em> Click Done and add a second section: <em>“These seedlings need sunlight and a little water each morning.”</em> Set the second section's Pause to 1 for a one-second break before it begins. Try a slower Rate for the instructions, or select another voice to create a second speaker.</p>
+    <p>Listen to the full sequence before downloading. Shorter sentences and punctuation often improve the rhythm. Spell out an unfamiliar abbreviation or try a phonetic spelling when a name sounds wrong. Changing the language or regional voice may also help. Voice support varies, so adjust one setting at a time and compare the result.</p>
+
+    <h2>Limits and choosing another tool</h2>
+    <p>The free tool accepts up to <strong>1,000 characters per section and 10,000 characters in total</strong>. Split longer passages at natural sentence boundaries. These limits apply to each synthesis request; the tool is intended for short narrations rather than whole books or long documents.</p>
+    <p>Use the <a href="ssml-editor.html">SSML editor</a> if you want to write speech markup directly. Use <a href="soundboard.html">Soundboard</a> to play individual phrases with your browser's voices. For larger cloud-synthesis workflows, the <a href="polly.html">Amazon Polly</a> and <a href="wavenet.html">Google Wavenet</a> tools use your own provider credentials and bill usage to your provider account.</p>
+
+    <h2>If speech does not play</h2>
+    <p>Check that the first section has a voice and some text, your device is not muted, and each section is within the character limit. Try a short sentence with the default delivery settings. If one voice fails, try another voice or provider and check your connection. Keep a separate copy of your script before refreshing: this editor does not save your work between page loads.</p>
+    <p>Cloud speech processing sends your text to the hosted service. Read the <a href="privacy.html">privacy policy</a> for processing and temporary-storage details, or visit the <a href="faq.html">FAQ</a> for more help. Before publishing a narration, make sure you have permission to use the source text and follow the selected provider's applicable terms.</p>
+  </article>
+
   <footer class="container text-center text-muted mb-4">
     <a href="privacy.html">Privacy policy</a>
   </footer>

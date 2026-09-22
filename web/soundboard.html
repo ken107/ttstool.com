@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
@@ -13,9 +13,9 @@
   <title>Soundboard - TTS Tool</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly and Microsoft Azure.">
-  <meta property="og:title" content="TTS Tool">
-  <meta property="og:description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly and Microsoft Azure.">
+  <meta name="description" content="Build a temporary soundboard of spoken phrases using your browser voices. Adjust speed, pitch, and volume for quick playback.">
+  <meta property="og:title" content="Soundboard - TTS Tool">
+  <meta property="og:description" content="Build a temporary soundboard of spoken phrases using your browser voices. Adjust speed, pitch, and volume for quick playback.">
 
   <!-- favicon -->
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -159,5 +159,24 @@
     bind-param-item="#editItemDialog.item"
     bind-event-save-item="editItemDialog.onSave(event.data)"
     bind-event-test-item="editItemDialog.onTest(event.data)"></div>
+  <article class="container tool-guide my-5" aria-labelledby="guide-title">
+    <h1 id="guide-title">Build a soundboard of spoken phrases</h1>
+    <p>Soundboard lets you keep several short phrases on screen and play them individually. Use it for presentation cues, language practice, or a set of frequently repeated announcements. It uses the voices available through your browser and operating system, so the voice list can differ between devices.</p>
+    <h2>Create and play a phrase</h2>
+    <ol>
+      <li>Select a language, then click the plus button to add an item.</li>
+      <li>Choose a voice and enter the words you want it to say. Adjust Volume, Speed, and Pitch to taste.</li>
+      <li>Click Test to hear the phrase before saving. Click Save to add it to your current board.</li>
+      <li>Click a phrase on the board to speak it. Use its three-dot menu to edit or delete it.</li>
+    </ol>
+    <p>For a presentation, try separate items for “Welcome, everyone,” “Let's move to the next slide,” and “Thank you for joining us.” Keep each cue short so you can find it quickly. Starting another phrase stops the speech already playing; the board does not mix several voices at once.</p>
+    <h2>What is saved?</h2>
+    <p><strong>Your board lasts only for the current page session.</strong> Save adds a phrase to the open board; it does not save a file or store the board for your next visit. Copy important phrases elsewhere before closing or refreshing the tab.</p>
+    <p>This tool plays speech but does not export audio files. To create an MP3, use the <a href="index.html">main TTS Tool</a>. For written control over pauses and delivery, try the <a href="ssml-editor.html">SSML editor</a>.</p>
+    <h2>Missing voices or no sound?</h2>
+    <p>Allow a moment for the browser to load its voices. If your language is unavailable, check the speech-language options on your device or try another browser. Check your device volume and the phrase's Volume setting, then test a short sentence. Some voices rely on an online service, so browser speech should not be assumed to work offline or entirely on your device.</p>
+    <p>See the <a href="faq.html">FAQ</a> for help choosing a tool and the <a href="privacy.html">privacy policy</a> for site information practices.</p>
+  </article>
+
 </body>
 </html>

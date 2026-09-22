@@ -12,3 +12,10 @@
 [data-bs-theme=dark] ::placeholder {
   color: #999 !important;
 }
+
+/* Reading guides stay below the interactive tools. */
+.tool-guide { max-width: 860px; line-height: 1.7; }
+.tool-guide h1 { font-size: 1.75rem; margin-bottom: 1rem; }
+.tool-guide h2 { font-size: 1.25rem; margin-top: 1.75rem; }
+.tool-guide li { margin-bottom: .65rem; }
+.tool-guide pre { white-space: pre-wrap; overflow-wrap: anywhere; }
