@@ -76,7 +76,8 @@
       apiKey = key;
       error = null;
       $ajax({
-        url: googleServiceUrl + "/voices?key=" + apiKey,
+        url: googleServiceUrl + "/voices",
+        headers: {"X-Goog-Api-Key": apiKey},
         dataType: "json"
       })
       .then(function(res) {
@@ -140,7 +141,8 @@
       progress++;
       $ajax({
         method: "POST",
-        url: googleServiceUrl + "/text:synthesize?key=" + apiKey,
+        url: googleServiceUrl + "/text:synthesize",
+        headers: {"X-Goog-Api-Key": apiKey},
         contentType: "application/json",
         data: JSON.stringify({
           input: text.trim().startsWith("<speak") ? {ssml: text} : {text},
