@@ -1,6 +1,6 @@
 {
   "scripts": {
     "start": "http-server web",
-    "deploy": "aws s3 sync --delete --metadata-directive REPLACE --cache-control max-age=86400,public web s3://lsdsoftware-websites/ttstool.com"
+    "deploy": "sh scripts/deploy.sh"
   }
 }
