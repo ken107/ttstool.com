@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/components.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -37,25 +38,15 @@
 
   <style>
     body {
-      --primary-color: #4361ee;
-      --secondary-color: #3a0ca3;
-      --background-color: #f8f9fa;
-      --card-background: #ffffff;
-      --text-color: #212529;
-      --text-secondary: #6c757d;
-      --border-radius: 8px;
-      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --primary-color: var(--tt-primary);
+      --secondary-color: var(--tt-secondary);
+      --background-color: var(--tt-bg);
+      --card-background: var(--tt-surface);
+      --text-color: var(--tt-text);
+      --text-secondary: var(--tt-muted);
+      --border-radius: var(--tt-radius);
+      --box-shadow: var(--tt-shadow);
       --transition: all 0.3s ease;
-    }
-
-    body[data-bs-theme=dark] {
-      --primary-color: #7da6ff;
-      --secondary-color: #a3bffa;
-      --background-color: #181a1b;
-      --card-background: #23272a;
-      --text-color: #f1f3f4;
-      --text-secondary: #b0b3b8;
-      --box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     }
 
     * {
@@ -78,13 +69,14 @@
       padding: 2rem 1.5rem;
     }
 
-    header {
+    .main-container > header {
       text-align: center;
-      margin-bottom: 3rem;
+      margin: 1rem 0 3rem;
     }
 
-    h1 {
+    .main-container h1 {
       font-size: 2.5rem;
+      letter-spacing: -.025em;
       font-weight: 700;
       color: var(--primary-color);
       margin-bottom: 1rem;
@@ -122,8 +114,12 @@
       transition: var(--transition);
     }
 
+    .faq-item {
+      border: 1px solid var(--tt-border);
+    }
+
     .faq-question:hover {
-      background-color: rgba(67, 97, 238, 0.05);
+      background-color: var(--tt-tint);
     }
 
     .faq-question::after {
@@ -277,6 +273,17 @@
       </div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>TTS Tool by LSD Software</span>
+      <nav aria-label="Footer">
+        <a href="faq.html">FAQ</a>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+      </nav>
+    </div>
+  </footer>
 
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

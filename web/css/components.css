@@ -1,31 +1,62 @@
-
-.soundboard .navbar .navbar-brand {
-  color: olivedrab;
+/* Soundboard phrase tiles */
+.soundboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-
-
-.soundboard-item-list .label {
-  padding: 0 5px;
-  border-radius: 3px;
-  font-size: smaller;
+.soundboard-tile {
+  position: relative;
+  display: flex;
+  background: var(--tt-surface);
+  border: 1px solid var(--tt-border);
+  border-radius: var(--tt-radius-lg);
+  box-shadow: var(--tt-shadow);
+  transition: border-color .15s, box-shadow .15s, transform .15s;
 }
-.soundboard-item-list .label.pause {
-  background-color: #b33b95;
-  color: #f5b5dc;
+.soundboard-tile:hover {
+  border-color: rgba(var(--tt-primary-rgb), .45);
+  box-shadow: var(--tt-shadow), 0 0 0 3px var(--tt-tint);
+  transform: translateY(-1px);
 }
-.soundboard-item-list .label.volume {
-  background-color: #407f51;
-  color: #aed182;
+.soundboard-play {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .65rem;
+  padding: 1.1rem 0 1.1rem 1.1rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  border-radius: var(--tt-radius-lg);
 }
-.soundboard-item-list .label.rate {
-  background-color: #008eac;
-  color: #a9d1ec;
+.soundboard-play:focus-visible { outline: none; box-shadow: var(--tt-ring); }
+.soundboard-play-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tt-tint);
+  color: var(--tt-primary);
+  transition: background-color .15s, color .15s;
 }
-.soundboard-item-list .label.voice {
-  background-color: #916460;
-  color: #ffee9c;
+.soundboard-play-icon .material-icons { font-size: 22px; }
+.soundboard-tile:hover .soundboard-play-icon { background: var(--tt-primary); color: var(--tt-on-primary); }
+.soundboard-text {
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
-.soundboard-item-list .label.pitch {
-  background-color: #e37000;
-  color: #fbcda8;
-}
+.soundboard-chips { display: flex; flex-wrap: wrap; }
+.soundboard-chips .label { margin-bottom: 0; }
+.soundboard-menu { padding: .6rem .5rem 0 0; }
+.soundboard-add { display: flex; }
+.soundboard-add .btn-dashed { min-height: 120px; flex-direction: column; }
+.soundboard-add .btn-dashed .material-icons { font-size: 1.6rem; }

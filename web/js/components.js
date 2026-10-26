@@ -22,5 +22,4 @@ function SoundboardEditItemDialog(viewRoot) {
 }
 
 function Navbar() {
-  this.brandText = "TTS Tool"
 }

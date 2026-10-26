@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123643790-2"></script>
@@ -10,7 +10,7 @@
     gtag('config', 'UA-123643790-2');
   </script>
 
-  <title>TTS Tool</title>
+  <title>Google Wavenet - TTS Tool</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Create voice narrations using text-to-speech (TTS) technology; export MP3 audio track and use in your YouTube videos; powered by Amazon Polly, Google Wavenet, and Microsoft Azure.">
@@ -26,8 +26,10 @@
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/components.css">
 
@@ -35,15 +37,6 @@
   <script src="js/databind.js"></script>
   <script src="js/common.js"></script>
   <script src="js/components.js"></script>
-
-  <style>
-  h2 {
-    margin: 1rem 0;
-  }
-  .material-icons {
-    vertical-align: middle;
-  }
-  </style>
 
   <script>
     state = 0;
@@ -197,119 +190,153 @@
   
   <div bind-view="Navbar"
     bind-param-dark-mode="#darkMode"
-    bind-param-brand-text="'Google Wavenet TTS'"
     bind-param-active-page="'WAVENET'"
     bind-event-toggle-dark-mode="this.toggleDarkMode()"></div>
 
-  <div class="container main mt-4 mb-5">
-    <div bind-statement-1="$(thisElem).toggle(#state == 0)">
+  <main class="site-main">
+  <div class="container page-narrow main">
+    <header class="page-header">
+      <span class="page-eyebrow"><i class="material-icons">cloud</i> Google Cloud</span>
+      <h1 class="page-title">Synthesize with Google voices</h1>
+      <p class="page-subtitle">Use Google Cloud Text-to-Speech voices with your own API key. Requests go straight from your browser to Google and are billed to your project.</p>
+    </header>
+
+    <ol class="stepper" aria-label="Progress">
+      <li bind-statement-1="toggleClass(thisElem, #state == 0, 'current'); toggleClass(thisElem, #state != 0, 'done')"><span class="step-num">1</span><span class="step-text">API key</span></li>
+      <li bind-statement-1="toggleClass(thisElem, #state == 2, 'current'); toggleClass(thisElem, #state == 1, 'done')"><span class="step-num">2</span><span class="step-text">Language</span></li>
+      <li bind-statement-1="toggleClass(thisElem, #state == 1, 'current')"><span class="step-num">3</span><span class="step-text">Synthesize</span></li>
+    </ol>
+
+    <div class="panel" bind-statement-1="$(thisElem).toggle(#state == 0)">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="icon-badge"><i class="material-icons">key</i></span>
+        <div>
+          <h2 class="panel-title">Connect your Google Cloud project</h2>
+          <p class="panel-subtitle">Use an API key with the Text-to-Speech API enabled.</p>
+        </div>
+      </div>
       <form bind-event-submit="this.onSubmit0(thisElem.key.value, thisElem.remember.checked); return false;">
         <div class="mb-3">
-          API Key
-          <input class="form-control" type="password" name="key"
+          <label class="form-label" for="wavenetKey">API key</label>
+          <input class="form-control" type="password" name="key" id="wavenetKey" autocomplete="off"
             bind-statement-1="thisElem.value = savedApiKey">
         </div>
-        <div class="mb-3 form-check">
-          <input class="form-check-input" type="checkbox" name="remember" id="cboRememberMe"
-            bind-statement-1="thisElem.checked = !!savedApiKey">
-          <label class="form-check-label" for="cboRememberMe">Remember for 7 days</label>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4">
+          <div class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" name="remember" id="cboRememberMe"
+              bind-statement-1="thisElem.checked = !!savedApiKey">
+            <label class="form-check-label" for="cboRememberMe">Remember for 7 days</label>
+          </div>
+          <button type="submit" class="btn btn-primary">Continue <i class="material-icons">arrow_forward</i></button>
         </div>
-        <div class="mb-3">
-          <button type="submit" class="btn"
-            bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-primary')">Submit</button>
-        </div>
-        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
-          <div class="alert alert-danger">{{#error.message}}</div>
+        <div class="mt-3" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger mb-0">{{#error.message}}</div>
         </div>
       </form>
     </div>
-    <div bind-repeater-if="#state == 2 ? 1 : 0">
+
+    <div class="panel" bind-repeater-if="#state == 2 ? 1 : 0">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <span class="icon-badge"><i class="material-icons">language</i></span>
+        <div>
+          <h2 class="panel-title">Choose a language</h2>
+          <p class="panel-subtitle">You'll pick a specific voice next.</p>
+        </div>
+      </div>
       <form bind-event-submit="this.onSubmit2(thisElem.lang.value); return false;">
         <div class="mb-3">
-          Select Language
-          <select class="form-control" name="lang" bind-statement-1="if (#languages) setTimeout(() => thisElem.value = 'en-US', 0)">
+          <label class="form-label" for="wavenetLang">Language</label>
+          <select class="form-select" name="lang" id="wavenetLang" bind-statement-1="if (#languages) setTimeout(() => thisElem.value = 'en-US', 0)">
             <option bind-repeater-i="#languages.length"
               bind-statement-1="thisElem.value = #languages[#i]">{{getLangName(#languages[#i])}}</option>
           </select>
         </div>
-        <div class="mb-3">
-          <button type="submit" class="btn"
-            bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-primary')">Submit</button>
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-primary">Continue <i class="material-icons">arrow_forward</i></button>
         </div>
-        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
-          <div class="alert alert-danger">{{#error.message}}</div>
+        <div class="mt-3" bind-statement-1="$(thisElem).toggle(!!#error)">
+          <div class="alert alert-danger mb-0">{{#error.message}}</div>
         </div>
       </form>
     </div>
+
     <div bind-statement-1="$(thisElem).toggle(#state == 1)">
       <form bind-var-selected-voice="null"
         bind-event-submit="this.onSubmit1(thisElem.voice.value, thisElem.text.value, thisElem.format.value); return false;">
-        <div class="mb-3">
-          <div class="alert alert-info">
-            <button type="button" class="btn-close float-end" aria-label="Close"
-              bind-event-click="$(thisElem).parent().hide()"></button>
+        <div class="alert alert-info callout">
+          <i class="material-icons">payments</i>
+          <div class="callout-body">
             Each time you click Synthesize, a request is made to Google Cloud, and the corresponding number of characters is billed.
             <u>So only click when you're ready</u>. Currently there's no API to get the total number of characters you have used,
             so be conservative to avoid overrunning your <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">free tier</a>.
           </div>
-          <div class="alert alert-warning" bind-repeater-if="/-(Studio)-/.test(#selectedVoice) ? 1 : 0">
+          <button type="button" class="btn-close" aria-label="Close"
+            bind-event-click="$(thisElem).parent().hide()"></button>
+        </div>
+        <div class="alert alert-warning callout" bind-repeater-if="/-(Studio)-/.test(#selectedVoice) ? 1 : 0">
+          <i class="material-icons">warning_amber</i>
+          <div class="callout-body">
             You selected a voice that has very high cost per character.
             Please review the <a target="_blank" href="https://cloud.google.com/text-to-speech/pricing">pricing</a> page to make sure you don't incur a large bill.
           </div>
         </div>
-        <div class="mb-3">
-          Select Voice
-          <select class="form-control" name="voice"
-            bind-event-change="#selectedVoice = thisElem.value">
-            <optgroup bind-repeater-g="#show.length"
-              bind-var-voices="#voiceGroups.get(#show[#g])"
-              bind-statement-1="thisElem.label = #show[#g]">
-              <option bind-repeater-i="#voices.length"
-                bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="mb-3" bind-var-char-count="0">
-          Enter Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a>
-          <textarea class="form-control" name="text" rows="10"
-            bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
-          <small class="form-text text-muted" style="float: right;">({{#totalChars}} total chars billed during this session)</small>
-          <small class="form-text text-muted">{{#charCount}} chars</small>
-        </div>
-        <div class="mb-3">
-          Output Format
-          <select class="form-control" name="format">
-            <option value="OGG_OPUS">OGG OPUS</option>
-            <option value="MP3">MP3</option>
-            <option value="LINEAR16">WAV</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <button type="submit" class="btn"
-            bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-primary')"
-            bind-statement-2="thisElem.disabled = #progress > 0">
-            <div class="spinner-border spinner-border-sm" role="status" bind-statement-1="$(thisElem).toggle(#progress > 0)">
+        <div class="panel">
+          <div class="mb-3">
+            <label class="form-label" for="wavenetVoice">Voice</label>
+            <select class="form-select" name="voice" id="wavenetVoice"
+              bind-event-change="#selectedVoice = thisElem.value">
+              <optgroup bind-repeater-g="#show.length"
+                bind-var-voices="#voiceGroups.get(#show[#g])"
+                bind-statement-1="thisElem.label = #show[#g]">
+                <option bind-repeater-i="#voices.length"
+                  bind-statement-1="thisElem.value = #voices[#i].name">{{#voices[#i].name}} ({{#voices[#i].gender}})</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="mb-3" bind-var-char-count="0">
+            <label class="form-label" for="wavenetText">Text or <a target="_blank" href="https://cloud.google.com/text-to-speech/docs/ssml">SSML</a></label>
+            <textarea class="form-control" name="text" id="wavenetText" rows="10"
+              bind-event-input="#charCount = removeTags(thisElem.value).length"></textarea>
+            <div class="field-row">
+              <span>{{#charCount}} chars</span>
+              <span>{{#totalChars}} total chars billed this session</span>
             </div>
-            Synthesize
-          </button>
-          <a class="btn ms-1"
-            bind-statement-3="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-secondary')"
-            bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
-            bind-statement-1="$(thisElem).attr('href', #audioUrl)">Download</a>
-          <div class="mt-4 align-items-center"
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="wavenetFormat">Output format</label>
+            <select class="form-select" name="format" id="wavenetFormat">
+              <option value="OGG_OPUS">OGG OPUS</option>
+              <option value="MP3">MP3</option>
+              <option value="LINEAR16">WAV</option>
+            </select>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary"
+              bind-statement-2="thisElem.disabled = #progress > 0">
+              <div class="spinner-border spinner-border-sm" role="status" bind-statement-1="$(thisElem).toggle(#progress > 0)">
+              </div>
+              <i class="material-icons" bind-statement-1="$(thisElem).toggle(!#progress)">graphic_eq</i>
+              Synthesize
+            </button>
+            <a class="btn btn-outline"
+              bind-statement-2="$(thisElem).toggle(!!#filename).attr('download', #filename)"
+              bind-statement-1="$(thisElem).attr('href', #audioUrl)"><i class="material-icons">file_download</i> Download</a>
+          </div>
+          <div class="audio-result"
             bind-statement-1="$(thisElem).css('display', #audioUrl ? 'flex' : 'none')">
             <audio controls bind-statement-1="if (#audioUrl) {thisElem.src = #audioUrl; thisElem.play()}"
               bind-statement-2="thisElem.defaultPlaybackRate = thisElem.playbackRate = #playbackSettings.speed"></audio>
-            <i class="material-icons ms-1" style="cursor: pointer"
-              bind-event-click="#showPlaybackSettings = true">settings</i>
+            <button type="button" class="btn btn-ghost btn-icon" title="Playback settings"
+              bind-event-click="#showPlaybackSettings = true"><i class="material-icons">settings</i></button>
           </div>
-        </div>
-        <div class="mb-3" bind-statement-1="$(thisElem).toggle(!!#error)">
-          <div class="alert alert-danger">{{#error.message}}</div>
+          <div class="mt-3" bind-statement-1="$(thisElem).toggle(!!#error)">
+            <div class="alert alert-danger mb-0">{{#error.message}}</div>
+          </div>
         </div>
       </form>
     </div>
   </div>
+  </main>
 
   <div class="playback-settings-dialog modal fade" tabindex="-1" role="dialog" aria-hidden="true"
     bind-statement-2="$(thisElem).modal(#showPlaybackSettings ? 'show' : 'hide')"
@@ -318,22 +345,33 @@
       <div class="modal-content">
         <form bind-event-submit="#playbackSettings.speed = Math.max(.1, Math.min(10, Number(thisElem.speed.value) || 1)); return #showPlaybackSettings = false;">
           <div class="modal-header">
-            <strong class="modal-title">Playback Settings</strong>
+            <h5 class="modal-title">Playback settings</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <label>Speed</label>
-            <input type="text" name="speed" class="form-control" bind-statement-1="thisElem.value = #playbackSettings.speed" />
+            <label class="form-label" for="playbackSpeed">Speed</label>
+            <input type="text" name="speed" id="playbackSpeed" class="form-control" bind-statement-1="thisElem.value = #playbackSettings.speed" />
+            <div class="form-text">Between 0.1 and 10. 1 is normal speed.</div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn"
-              bind-statement-1="toggleClass(thisElem, #darkMode, 'btn-dark', 'btn-primary')">
+            <button type="submit" class="btn btn-primary">
               <i class="material-icons">check</i> OK</button>
           </div>
         </form>
       </div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>TTS Tool by LSD Software</span>
+      <nav aria-label="Footer">
+        <a href="faq.html">FAQ</a>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="https://www.lsdsoftware.com/contact.html?subject=TTS%20Tool">Feedback</a>
+      </nav>
+    </div>
+  </footer>
 
   <!-- Bootstrap JS Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
