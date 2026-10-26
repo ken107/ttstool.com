@@ -143,6 +143,8 @@
   </div>
 
   <article class="container tool-guide mb-5" aria-labelledby="guide-title">
+    <details class="guide-details">
+      <summary class="btn btn-outline-secondary btn-sm">Instructions</summary>
     <h1 id="guide-title">Shape your narration with SSML</h1>
     <p>Speech Synthesis Markup Language (SSML) adds instructions around your text to control its spoken delivery. This editor is useful when a pause belongs inside a sentence or a particular phrase needs a different pace. For controls without markup, use the <a href="index.html">main TTS Tool</a>.</p>
     <h2>Start with a short example</h2>
@@ -159,6 +161,7 @@
     <p>Every opening tag needs a matching closing tag, except self-closing tags such as <code>&lt;break time="750ms"/&gt;</code>. Use straight quotation marks around attributes. Write an ampersand as <code>&amp;amp;</code> in XML text. Keep all content inside one <code>speak</code> element.</p>
     <p>The editor checks XML syntax before sending the request, but valid XML does not mean every speech instruction is supported. Amazon and Microsoft voices can support different SSML features. If an example fails, start with plain text inside the wrapper and add tags back one at a time. See the <a href="https://docs.aws.amazon.com/polly/latest/dg/supportedtags.html">Amazon Polly supported tags</a> or <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup">Microsoft speech markup documentation</a> for provider-specific details.</p>
     <p>This tool uses hosted speech processing. See our <a href="privacy.html">privacy policy</a> and <a href="faq.html">FAQ</a> before submitting sensitive text.</p>
+    </details>
   </article>
 
   <!-- Bootstrap JS Bundle with Popper -->

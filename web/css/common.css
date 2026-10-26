@@ -19,3 +19,7 @@
 .tool-guide h2 { font-size: 1.25rem; margin-top: 1.75rem; }
 .tool-guide li { margin-bottom: .65rem; }
 .tool-guide pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* the guide text stays in the page for crawlers, collapsed until the reader asks for it */
+.guide-details > summary { list-style: none; }
+.guide-details > summary::-webkit-details-marker { display: none; }
+.guide-details[open] > summary { margin-bottom: 1rem; }
